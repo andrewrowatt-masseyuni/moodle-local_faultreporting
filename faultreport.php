@@ -37,12 +37,48 @@ $PAGE->set_context(context_system::instance());
 
 $PAGE->set_heading($SITE->fullname);
 
+$diagnosticinfo =
+    "Useragent: $_SERVER[HTTP_USER_AGENT]\n" .
+    "Page: xyz\n" .
+    "URL: xyz\n";
+
 $form = new \local_faultreporting\form\faultreport(null,
- ['diagnosticinfo' => 'diagnosticinfo is here']);
+ ['diagnosticinfo' => $diagnosticinfo]);
 
+ echo $OUTPUT->header();
 
-echo $OUTPUT->header();
+ if ($form->is_cancelled()) {
+    // If there is a cancel element on the form, and it was pressed,
+    // then the `is_cancelled()` function will return true.
+    // You can handle the cancel operation here.
+} else if ($formdata = $form->get_data()) {
+    $description =
+        "Name: $formdata->name\n" .
+        "Email: $formdata->email\n" .
+        "Phone: $formdata->phone\n\n" .
+        "Description:\n$formdata->description\n\n" .
+        "Diagnostic Info:\n$formdata->diagnosticinfo";
 
-$form->display();
+    $reportdata = [
+        'reportedby' => $USER->username,
+        'title' => 'Log a Stream Request',
+        'description' => $description,
+    ];
+
+    faultreport::save_report($reportdata);
+
+    var_dump($reportdata);
+
+} else {
+    // This branch is executed if the form is submitted but the data doesn't
+    // validate and the form should be redisplayed or on the first display of the form.
+
+    // Set anydefault data (if any).
+    // $form->set_data($toform);
+
+    // Display the form.
+    $form->display();
+}
+
 
 echo $OUTPUT->footer();

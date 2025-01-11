@@ -24,4 +24,19 @@ namespace local_faultreporting;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class faultreport {
+    /**
+     * Sends a report
+     *
+     * Returns false if an error occuring during then send process
+     *
+     * @param mixed $data
+     * @return bool
+     */
+    public static function send_report(array $data): bool {
+        return true;
+    }
+
+    public static function save_report(array $data): void {
+        
+    }
 }

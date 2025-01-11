@@ -22,8 +22,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
- function local_faultreporting_extend_navigation_frontpage(navigation_node $frontpage) {
+/**
+ * Insert a link on the frontpage
+ *
+ * @param navigation_node $node Course node.
+ */
+function local_faultreporting_extend_navigation_frontpage(navigation_node $frontpage) {
     $frontpage->add(
         get_string('pluginname', 'local_faultreporting'),
         new moodle_url('/local/faultreporting/faultreport.php'),
@@ -32,7 +36,7 @@
 }
 
 /**
- * Insert a link to index.php on any course page.
+ * Insert a link on any course page.
  *
  * @param navigation_node $node Course node.
  */

@@ -16,6 +16,9 @@
 
 namespace local_faultreporting;
 
+defined('MOODLE_INTERNAL') || die();
+require_once("$CFG->dirroot/user/profile/lib.php");
+
 /**
  * Class util
  *
@@ -24,16 +27,43 @@ namespace local_faultreporting;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class util {
+    /**
+     * Returns true if username is 8 digits
+     *
+     * @return bool
+     */
     public static function is_student(): bool {
         global $USER;
 
-        return preg_match('/^\d{8}$/',$USER->username) == 1;
+        return preg_match('/^\d{8}$/', $USER->username) == 1;
     }
 
+    /**
+     * Gets phone number from user profile field with fallback to built-in phone fields
+     *
+     * @return string
+     */
     public static function get_phone(): string {
         global $USER;
 
-        return 'TBA';
-    }
+        $phone = '';
 
+        $cpf = profile_user_record($USER->id);
+
+        // First check MU SMS CellPhone User Profile field...
+        if (property_exists($cpf, 'CellPhone')) {
+            $phone = $cpf->CellPhone;
+        }
+
+        // If empty, fallback to built-in Moodle phone fields...
+        if (!$phone) {
+            $phone = $USER->phone2;
+        }
+
+        if (!$phone) {
+            $phone = $USER->phone1;
+        }
+
+        return $phone;
+    }
 }

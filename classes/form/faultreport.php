@@ -43,12 +43,11 @@ class faultreport extends \moodleform {
 
         $mform->addElement('header', 'general', get_string('basicinformationgroup', 'local_faultreporting'));
 
-        $userarray = [];
-
-        $mform->addElement('text', 'username', util::is_student() ? get_string('studentid', 'local_faultreporting') : get_string('username', 'local_faultreporting'), ['size' => 8,'disabled' => 'disabled']);
+        $mform->addElement('text', 'username',
+            util::is_student() ? get_string('studentid', 'local_faultreporting') : get_string('username', 'local_faultreporting'),
+            ['size' => 8, 'disabled' => 'disabled']);
         $mform->setDefault('username', $USER->username);
         $mform->setType('username', PARAM_TEXT);
-        // $mform->addRule('username', null, 'required', null, 'client');
 
         $mform->addElement('text', 'name', get_string('name'), ['size' => 32]);
         $mform->setDefault('name', $USER->firstname . ' ' . $USER->lastname);
@@ -66,8 +65,8 @@ class faultreport extends \moodleform {
         $mform->addRule('phone', null, 'required', null, 'client');
 
         $mform->addElement(
-            'textarea', 
-            'description', 
+            'textarea',
+            'description',
             get_string('description', 'local_faultreporting'),
             'wrap="virtual" rows="5" cols="50"');
         $mform->setDefault('description', '');
@@ -80,7 +79,7 @@ class faultreport extends \moodleform {
             'alert alert-info help_text', ['style' => 'margin-left: calc(25% + 7px );']));
 
         $mform->addElement('header', 'diagnosticinformation', get_string('diagnosticinformation', 'local_faultreporting'));
-        $mform->setExpanded('diagnosticinformation', false); // collapse by default
+        $mform->setExpanded('diagnosticinformation', false); // ...collapse by default
 
         $mform->addElement('html', html_writer::div(
             $this->_customdata['diagnosticinfo'],
