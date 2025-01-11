@@ -14,24 +14,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace local_faultreporting;
+
 /**
- * English language pack for Fault Reporting
+ * Class util
  *
  * @package    local_faultreporting
- * @category   string
  * @copyright  2025 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+class util {
+    public static function is_student(): bool {
+        global $USER;
 
-defined('MOODLE_INTERNAL') || die();
+        return preg_match('/^\d{8}$/',$USER->username) == 1;
+    }
 
-$string['basicinformationgroup'] = 'General';
-$string['description'] = 'Description';
-$string['description_help'] = 'Include as much information as possible.';
-$string['diagnosticinformation'] = 'Diagnostic information for support personal';
-$string['name'] = 'Name';
-$string['pluginname'] = 'Fault Reporting';
-$string['privacy:metadata'] = 'The Fault Reporting plugin doesn\'t store any personal data.';
-$string['studentid'] = 'Student ID';
-$string['submitreport'] = 'Submit report';
-$string['username'] = 'Username';
+    public static function get_phone(): string {
+        global $USER;
+
+        return 'TBA';
+    }
+
+}

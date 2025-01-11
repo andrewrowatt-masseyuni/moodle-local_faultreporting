@@ -14,24 +14,35 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace local_faultreporting;
+
+use moodle_url;
+use context_system;
+
 /**
- * English language pack for Fault Reporting
+ * TODO describe file faultreport
  *
  * @package    local_faultreporting
- * @category   string
  * @copyright  2025 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+require('../../config.php');
 
-$string['basicinformationgroup'] = 'General';
-$string['description'] = 'Description';
-$string['description_help'] = 'Include as much information as possible.';
-$string['diagnosticinformation'] = 'Diagnostic information for support personal';
-$string['name'] = 'Name';
-$string['pluginname'] = 'Fault Reporting';
-$string['privacy:metadata'] = 'The Fault Reporting plugin doesn\'t store any personal data.';
-$string['studentid'] = 'Student ID';
-$string['submitreport'] = 'Submit report';
-$string['username'] = 'Username';
+require_login();
+
+$url = new moodle_url('/local/faultreporting/faultreport.php', []);
+$PAGE->set_url($url);
+$PAGE->set_context(context_system::instance());
+
+$PAGE->set_heading($SITE->fullname);
+
+$form = new \local_faultreporting\form\faultreport(null,
+ ['diagnosticinfo' => 'diagnosticinfo is here']);
+
+
+echo $OUTPUT->header();
+
+$form->display();
+
+echo $OUTPUT->footer();

@@ -15,23 +15,33 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * English language pack for Fault Reporting
+ * Callback implementations for Fault Reporting
  *
  * @package    local_faultreporting
- * @category   string
  * @copyright  2025 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
 
-$string['basicinformationgroup'] = 'General';
-$string['description'] = 'Description';
-$string['description_help'] = 'Include as much information as possible.';
-$string['diagnosticinformation'] = 'Diagnostic information for support personal';
-$string['name'] = 'Name';
-$string['pluginname'] = 'Fault Reporting';
-$string['privacy:metadata'] = 'The Fault Reporting plugin doesn\'t store any personal data.';
-$string['studentid'] = 'Student ID';
-$string['submitreport'] = 'Submit report';
-$string['username'] = 'Username';
+ function local_faultreporting_extend_navigation_frontpage(navigation_node $frontpage) {
+    $frontpage->add(
+        get_string('pluginname', 'local_faultreporting'),
+        new moodle_url('/local/faultreporting/faultreport.php'),
+        navigation_node::TYPE_CUSTOM,
+    );
+}
+
+/**
+ * Insert a link to index.php on any course page.
+ *
+ * @param navigation_node $node Course node.
+ */
+function local_faultreporting_extend_navigation_course(navigation_node $node) {
+    if (isloggedin() && !isguestuser()) {
+        $node->add(
+            get_string('pluginname', 'local_faultreporting'),
+            new moodle_url('/local/faultreporting/faultreport.php'),
+            navigation_node::TYPE_CUSTOM,
+        );
+    }
+}
