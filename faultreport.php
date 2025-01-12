@@ -31,23 +31,32 @@ require('../../config.php');
 
 require_login();
 
+$frompage = optional_param('page', '-',PARAM_TEXT);
+$fromurl = optional_param('url', '-',PARAM_TEXT);
+
+if ($fromurl == '-' && array_key_exists('HTTP_REFERER', $_SERVER)) {
+    $fromurl = $_SERVER['HTTP_REFERER'];
+}
+
 $url = new moodle_url('/local/faultreporting/faultreport.php', []);
 $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
 
 $PAGE->set_heading($SITE->fullname);
 
+$clientinfo = util::get_client_info();
+
 $diagnosticinfo =
-    "Useragent: $_SERVER[HTTP_USER_AGENT]\n" .
-    "Page: xyz\n" .
-    "URL: xyz\n";
+    "Page: $frompage\n" .
+    "URL: $fromurl\n\n" .
+    "Browser: $clientinfo[browser]\n" .
+    "OS: $clientinfo[operatingsystem]\n" .
+    "Useragent: $_SERVER[HTTP_USER_AGENT]\n\n";
 
 $form = new \local_faultreporting\form\faultreport(null,
  ['diagnosticinfo' => $diagnosticinfo]);
 
- echo $OUTPUT->header();
-
- if ($form->is_cancelled()) {
+if ($form->is_cancelled()) {
     // If there is a cancel element on the form, and it was pressed,
     // then the `is_cancelled()` function will return true.
     // You can handle the cancel operation here.
@@ -58,27 +67,25 @@ $form = new \local_faultreporting\form\faultreport(null,
         "Phone: $formdata->phone\n\n" .
         "Description:\n$formdata->description\n\n" .
         "Diagnostic Info:\n$formdata->diagnosticinfo";
+    
+    [$transactionstatus, $externalidorerrormsg] = faultreport::save_and_send_report($USER->id, 'Log a Stream Request', $description);
 
-    $reportdata = [
-        'reportedby' => $USER->username,
-        'title' => 'Log a Stream Request',
-        'description' => $description,
-    ];
+    switch ($transactionstatus) {
+        case faultreport::TRANSACTION_SUCCESS:
+            $message = get_string('reportsuccessful', 'local_faultreporting',['externalid'=> $externalidorerrormsg]);
+            $messagetype = \core\output\notification::NOTIFY_SUCCESS;
+            break;
+        case faultreport::TRANSACTION_FAILURE:
+            $message = get_string('reporterror', 'local_faultreporting');
+            $messagetype = \core\output\notification::NOTIFY_ERROR;
+            break;
+    }
 
-    faultreport::save_report($reportdata);
-
-    var_dump($reportdata);
-
-} else {
-    // This branch is executed if the form is submitted but the data doesn't
-    // validate and the form should be redisplayed or on the first display of the form.
-
-    // Set anydefault data (if any).
-    // $form->set_data($toform);
-
-    // Display the form.
-    $form->display();
+    redirect(new moodle_url('/my'), $message, null, $messagetype);
 }
 
+echo $OUTPUT->header();
+
+$form->display();
 
 echo $OUTPUT->footer();

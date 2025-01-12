@@ -16,6 +16,10 @@
 
 namespace local_faultreporting;
 
+defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
+
 /**
  * Tests for Fault Reporting
  *
@@ -27,12 +31,20 @@ namespace local_faultreporting;
 final class lib_test extends \advanced_testcase {
 
     /**
-     * Example of a unittest
+     * Covers basic adding and sending of a fault report
      *
-     * TODO change the 'covers' tag to the class or function in the plugin.
-     * @covers ::get_config
+     * @covers faultreport
      */
-    public function test_plugin_installed(): void {
-        $this->assertNotEmpty(get_config('local_faultreporting', 'version'));
+    public function test_add_faultreport(): void {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $id = faultreport::save_report(2, 'title', 'description');
+
+        $faultreport = $DB->get_record('local_faultreporting', ['id' => $id], '*', MUST_EXIST);
+
+        $this->assertEquals(2, $faultreport->userid);
+        $this->assertEquals(faultreport::STATUS_NEW, $faultreport->status);
     }
 }

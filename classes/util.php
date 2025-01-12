@@ -19,6 +19,16 @@ namespace local_faultreporting;
 defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->dirroot/user/profile/lib.php");
 
+include_once 'thirdparty/spyc/Spyc.php';
+include_once 'thirdparty/device-detector/autoload.php';
+
+use DeviceDetector\ClientHints;
+use DeviceDetector\DeviceDetector;
+use DeviceDetector\Parser\Device\AbstractDeviceParser;
+
+use DeviceDetector\Parser\Client\Browser;
+use DeviceDetector\Parser\OperatingSystem;
+
 /**
  * Class util
  *
@@ -65,5 +75,19 @@ class util {
         }
 
         return $phone;
+    }
+
+    public static function get_client_info(): array {
+        $userAgent = $_SERVER['HTTP_USER_AGENT'];
+        $clientHints = ClientHints::factory($_SERVER); // client hints are optional
+
+        $dd = new DeviceDetector($userAgent, $clientHints);
+
+        $dd->parse();
+
+        return [
+            'browser' => $dd->getClient('name'),
+            'operatingsystem' => $dd->getOs('name'),
+        ];
     }
 }

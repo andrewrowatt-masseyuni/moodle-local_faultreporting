@@ -62,7 +62,6 @@ class faultreport extends \moodleform {
         $mform->addElement('text', 'phone', get_string('phone'), ['size' => 32]);
         $mform->setDefault('phone', util::get_phone());
         $mform->setType('phone', PARAM_TEXT);
-        $mform->addRule('phone', null, 'required', null, 'client');
 
         $mform->addElement(
             'textarea',
@@ -71,6 +70,7 @@ class faultreport extends \moodleform {
             'wrap="virtual" rows="5" cols="50"');
         $mform->setDefault('description', '');
         $mform->setType('description', PARAM_TEXT);
+        $mform->addRule('description', null, 'required', null, 'client');
         $mform->addHelpButton('description', 'description', 'local_faultreporting');
 
         // Arguably a bit of a hack to get the help text to display in my preferred place.
@@ -79,11 +79,12 @@ class faultreport extends \moodleform {
             'alert alert-info help_text', ['style' => 'margin-left: calc(25% + 7px );']));
 
         $mform->addElement('header', 'diagnosticinformation', get_string('diagnosticinformation', 'local_faultreporting'));
-        $mform->setExpanded('diagnosticinformation', false); // ...collapse by default
+        // $mform->setExpanded('diagnosticinformation', false); // ...collapse by default
 
-        $mform->addElement('html', html_writer::div(
+        $mform->addElement('html', html_writer::tag(
+            'div',
             $this->_customdata['diagnosticinfo'],
-            null, null));
+            ['style' => 'white-space: pre-wrap;']));
 
         $mform->closeHeaderBefore('buttonar');
         // End of owner group.
