@@ -31,8 +31,8 @@ require('../../config.php');
 
 require_login();
 
-$frompage = optional_param('page', '-',PARAM_TEXT);
-$fromurl = optional_param('url', '-',PARAM_TEXT);
+$frompage = optional_param('page', '-', PARAM_TEXT);
+$fromurl = optional_param('url', '-', PARAM_TEXT);
 
 if ($fromurl == '-' && array_key_exists('HTTP_REFERER', $_SERVER)) {
     $fromurl = $_SERVER['HTTP_REFERER'];
@@ -67,12 +67,12 @@ if ($form->is_cancelled()) {
         "Phone: $formdata->phone\n\n" .
         "Description:\n$formdata->description\n\n" .
         "Diagnostic Info:\n$formdata->diagnosticinfo";
-    
+
     [$transactionstatus, $externalidorerrormsg] = faultreport::save_and_send_report($USER->id, 'Log a Stream Request', $description);
 
     switch ($transactionstatus) {
         case faultreport::TRANSACTION_SUCCESS:
-            $message = get_string('reportsuccessful', 'local_faultreporting',['externalid'=> $externalidorerrormsg]);
+            $message = get_string('reportsuccessful', 'local_faultreporting', ['externalid' => $externalidorerrormsg]);
             $messagetype = \core\output\notification::NOTIFY_SUCCESS;
             break;
         case faultreport::TRANSACTION_FAILURE:

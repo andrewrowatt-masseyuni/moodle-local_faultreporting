@@ -78,10 +78,10 @@ class util {
     }
 
     public static function get_client_info(): array {
-        $userAgent = $_SERVER['HTTP_USER_AGENT'];
-        $clientHints = ClientHints::factory($_SERVER); // client hints are optional
+        $useragent = $_SERVER['HTTP_USER_AGENT'];
+        $clienthints = ClientHints::factory($_SERVER); // client hints are optional
 
-        $dd = new DeviceDetector($userAgent, $clientHints);
+        $dd = new DeviceDetector($useragent, $clienthints);
 
         $dd->parse();
 

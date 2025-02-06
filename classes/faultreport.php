@@ -51,6 +51,74 @@ class faultreport {
     const TRANSACTION_FAILURE = 'ERROR';
 
     /**
+     * Retry the transaction with the default username
+     */
+    const TRANSACTION_RETRY_WITH_DEFAULT = 'RETRY';
+
+    public static function build_assyst_json_payload(string $reportedby, string $affecteduser, string $title, string $description): string {
+        $reportedbyshortcode = strtoupper($reportedby);
+        $affectedusershortcode = strtoupper($affecteduser);
+
+        $data = [
+            'entityDefinitionId' => 319,
+            'entityDefinitionType' => 2,
+            'eventTypeEnum' => 'INCIDENT',
+            'shortDescription' => $title,
+            'remarks' => $description,
+            'affectedUser' => [
+                'resolvingParameters' => [[
+                    'parameterName' => 'shortCode',
+                    'parameterValue' => $affectedusershortcode,
+                ]],
+            ],
+            'reportingUser' => [
+                'resolvingParameters' => [[
+                    'parameterName' => 'shortCode',
+                    'parameterValue' => $reportedbyshortcode,
+                ]],
+            ],
+            'itemA' => [
+                'resolvingParameters' => [[
+                    'parameterName' => 'shortCode',
+                    'parameterValue' => 'OTHER',
+                ]],
+            ],
+            'itemB' => [
+                'resolvingParameters' => [[
+                    'parameterName' => 'shortCode',
+                    'parameterValue' => 'OTHER',
+                ]],
+            ],
+            'category' => [
+                'resolvingParameters' => [[
+                    'parameterName' => 'shortCode',
+                    'parameterValue' => 'DEFECT',
+                ]],
+            ],
+            'assignedServDept' => [
+                'resolvingParameters' => [[
+                    'parameterName' => 'shortCode',
+                    'parameterValue' => 'STREAM SERVICE DESK',
+                ]],
+            ],
+            'impact' => [
+                'resolvingParameters' => [[
+                    'parameterName' => 'shortCode',
+                    'parameterValue' => 'INDIVIDUAL',
+                ]],
+            ],
+            'priority' => [
+                'resolvingParameters' => [[
+                    'parameterName' => 'shortCode',
+                    'parameterValue' => '3-WORK NOT AFFECTED',
+                ]],
+            ],
+        ];
+
+        return json_encode($data);
+    }
+
+    /**
      * Sends a report
      *
      * Returns false if an error occuring during then send process
@@ -59,11 +127,77 @@ class faultreport {
      * @param mixed $data
      * @return string externalid
      */
-    public static function send_report(string $reportedby, string $title, string $description): array {
+    public static function send_report(string $reportedby, string $affecteduser, string $title, string $description, bool $useaffecteduserfallback = false): array {
         global $DB;
 
-        return [self::TRANSACTION_FAILURE, "Error: Message not sent."];
-        // return [self::TRANSACTION_SUCCESS, "externalID:TBA"];
+        $endpoint = get_config('local_faultreporting', 'assystapiurl');
+        $username = get_config('local_faultreporting', 'assystapiusername');
+        $password = get_config('local_faultreporting', 'assystapipassword');
+        $affecteduserfallback = get_config('local_faultreporting', 'assystaffecteduserfallback');
+
+        // ... used in retry scenarios
+        if($useaffecteduserfallback) {
+            $affecteduser = $affecteduserfallback;
+        }
+
+        $auth = base64_encode("$username:$password");
+
+        $payload = self::build_assyst_json_payload($reportedby, $affecteduser, $title, $description);
+
+        $ch = curl_init($endpoint);
+
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            "Authorization: Basic $auth",
+            'Accept: application/json',
+        ]);
+        
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+
+        // ... if localhost
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);    
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        
+        $responseraw = curl_exec($ch);
+        $response = json_decode($responseraw);
+
+        $httpcode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+        $curlerrorcode = curl_error($ch);
+        curl_close($ch);
+
+        if($responseraw) {
+            // ... we have a JSON response from Assyst
+            switch ($httpcode) {
+                case 201: /* created */
+                    $eventref = $response->eventRef;
+                    return [self::TRANSACTION_SUCCESS, $eventref];
+                case 400: /* Bad request */
+                    switch($response->type) {
+                        case 'ComplexValidationException':
+                            if($useaffecteduserfallback) {
+                                return [self::TRANSACTION_FAILURE, "HTTP Error 400: Bad request. Assyst API response: type: $response->type, message: $response->message. useaffecteduserfallback is true."];
+                            } else {
+                                return [self::TRANSACTION_RETRY_WITH_DEFAULT, "HTTP Error 400: Bad request. Assyst API response: type: $response->type, message: $response->message"];
+                            }
+                        default:
+                            return [self::TRANSACTION_FAILURE, "HTTP Error 400: Bad request. Assyst API response: type: $response->type, message: $response->message"];
+                    }
+                default:
+                    return [self::TRANSACTION_FAILURE, "HTTP Error $httpcode. Report not sent. curl error: $curlerrorcode."];
+            }
+        } else {
+            // ... no JSON response from Assyst, but we can perform some basic checks
+            switch ($httpcode) {
+                case 401: /* Unauthorized */
+                    return [self::TRANSACTION_FAILURE, "HTTP Error 401: Unauthorized. Check Assyst API Username and Password."];
+                default:
+                    return [self::TRANSACTION_FAILURE, "HTTP Error $httpcode. Report not sent. curl error: $curlerrorcode."];
+            }
+            
+        }
     }
 
     /**
@@ -110,13 +244,29 @@ class faultreport {
 
         $user = \core_user::get_user($userid);
 
-        [$transactionstatus, $externalidorerrormsg] = self::send_report($user->username, $title, $description);
+        [$transactionstatus, $externalidorerrormsg] = self::send_report($user->username, $user->username, $title, $description);
 
         switch ($transactionstatus) {
             case self::TRANSACTION_SUCCESS:
                 $report->externalid = $externalidorerrormsg;
                 $report->status = self::STATUS_SENT;
-            case self::TRANSACTION_FAILURE:
+                break;
+            case self::TRANSACTION_RETRY_WITH_DEFAULT:
+                // ... perform a one-time retry forcing the default username
+                [$transactionstatus, $externalidorerrormsg] = self::send_report($user->username, $user->username, $title, $description, true);
+
+                if($transactionstatus == self::TRANSACTION_SUCCESS) {
+                    $report->status = self::STATUS_SENT;
+                    $report->externalid = $externalidorerrormsg;
+                } else {
+                    $report->status = self::STATUS_SEND_FAILURE;
+                    $report->errormsg = $externalidorerrormsg;
+
+                    $transactionstatus = self::TRANSACTION_FAILURE; // ... specify the error in case of retry failure due to the fallback username being incorrect
+                }
+                break;
+
+            default:
                 $report->status = self::STATUS_SEND_FAILURE;
                 $report->errormsg = $externalidorerrormsg;
         }

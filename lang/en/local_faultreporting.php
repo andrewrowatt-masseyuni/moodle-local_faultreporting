@@ -25,6 +25,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['assystapiaffecteduserfallback'] = 'Assyst API Affected user fallback';
+$string['assystapiaffecteduserfallbackdesc'] = 'Shortcode of affected user that is used when the API reports a error with the Moodle supplied shortcode (username)';
+$string['assystapipassword'] = 'Assyst API password';
+$string['assystapipassworddesc'] = 'Assyst API password';
+$string['assystapiurl'] = 'Assyst API Events endpoint';
+$string['assystapiurldesc'] = 'Assyst API Events endpoint';
+$string['assystapiusername'] = 'Assyst API username';
+$string['assystapiusernamedesc'] = 'Assyst API username';
 $string['basicinformationgroup'] = 'General';
 $string['description'] = 'Description';
 $string['description_help'] = 'Include as much information as possible.';
@@ -32,7 +40,7 @@ $string['diagnosticinformation'] = 'Diagnostic information for support personal'
 $string['name'] = 'Name';
 $string['pluginname'] = 'Fault Reporting';
 $string['privacy:metadata'] = 'The Fault Reporting plugin doesn\'t store any personal data.';
-$string['reporterror'] = 'Well, this is embrassing. There was an error sending your fault report. The technical teams have been advised.';
+$string['reporterror'] = 'Well, this is embrassing. There was a fault sending your fault report. The technical teams have been advised.';
 $string['reportsuccessful'] = 'Report successful. Reference number is {$a->externalid}.';
 $string['studentid'] = 'Student ID';
 $string['submitreport'] = 'Submit report';
