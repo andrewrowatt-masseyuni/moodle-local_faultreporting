@@ -33,7 +33,7 @@ final class lib_test extends \advanced_testcase {
     /**
      * Covers basic adding and sending of a fault report
      *
-     * @covers faultreport
+     * @covers \local_faultreporting
      */
     public function test_add_faultreport(): void {
         global $DB;

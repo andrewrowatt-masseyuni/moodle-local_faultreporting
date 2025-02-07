@@ -55,7 +55,18 @@ class faultreport {
      */
     const TRANSACTION_RETRY_WITH_DEFAULT = 'RETRY';
 
-    public static function build_assyst_json_payload(string $reportedby, string $affecteduser, string $title, string $description): string {
+    /**
+     * Builds the prescibed/template JSON payload for Assyst
+     *
+     * @param string $reportedby
+     * @param string $affecteduser
+     * @param string $title
+     * @param string $description
+     * @return bool|string
+     */
+    public static function build_assyst_json_payload(
+            string $reportedby, string $affecteduser,
+            string $title, string $description): string {
         $reportedbyshortcode = strtoupper($reportedby);
         $affectedusershortcode = strtoupper($affecteduser);
 
@@ -127,7 +138,10 @@ class faultreport {
      * @param mixed $data
      * @return string externalid
      */
-    public static function send_report(string $reportedby, string $affecteduser, string $title, string $description, bool $useaffecteduserfallback = false): array {
+    public static function send_report(
+            string $reportedby, string $affecteduser,
+            string $title, string $description,
+            bool $useaffecteduserfallback = false): array {
         global $DB;
 
         $endpoint = get_config('local_faultreporting', 'assystapiurl');
@@ -136,7 +150,7 @@ class faultreport {
         $affecteduserfallback = get_config('local_faultreporting', 'assystaffecteduserfallback');
 
         // ... used in retry scenarios
-        if($useaffecteduserfallback) {
+        if ($useaffecteduserfallback) {
             $affecteduser = $affecteduserfallback;
         }
 
@@ -153,14 +167,18 @@ class faultreport {
             "Authorization: Basic $auth",
             'Accept: application/json',
         ]);
-        
+
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
         curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 
-        // ... if localhost
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);    
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        
+        $localhost = ['127.0.0.1', '::1'];
+
+        // ... if localhost, disable SSL verification
+        if (in_array($_SERVER['REMOTE_ADDR'], $localhost)) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        }
+
         $responseraw = curl_exec($ch);
         $response = json_decode($responseraw);
 
@@ -168,35 +186,44 @@ class faultreport {
         $curlerrorcode = curl_error($ch);
         curl_close($ch);
 
-        if($responseraw) {
+        if ($responseraw) {
             // ... we have a JSON response from Assyst
             switch ($httpcode) {
                 case 201: /* created */
                     $eventref = $response->eventRef;
                     return [self::TRANSACTION_SUCCESS, $eventref];
                 case 400: /* Bad request */
+                    // ... in some cases we can recover from a 400 error
                     switch($response->type) {
                         case 'ComplexValidationException':
-                            if($useaffecteduserfallback) {
-                                return [self::TRANSACTION_FAILURE, "HTTP Error 400: Bad request. Assyst API response: type: $response->type, message: $response->message. useaffecteduserfallback is true."];
+                            if ($useaffecteduserfallback) {
+                                return [self::TRANSACTION_FAILURE,
+                                    "HTTP Error 400: Bad request. Assyst API response:
+                                    type: $response->type, message: $response->message. useaffecteduserfallback is true."];
                             } else {
-                                return [self::TRANSACTION_RETRY_WITH_DEFAULT, "HTTP Error 400: Bad request. Assyst API response: type: $response->type, message: $response->message"];
+                                return [self::TRANSACTION_RETRY_WITH_DEFAULT,
+                                    "HTTP Error 400: Bad request. Assyst API response:
+                                    type: $response->type, message: $response->message"];
                             }
                         default:
-                            return [self::TRANSACTION_FAILURE, "HTTP Error 400: Bad request. Assyst API response: type: $response->type, message: $response->message"];
+                            return [self::TRANSACTION_FAILURE,
+                                "HTTP Error 400: Bad request. Assyst API response:
+                                type: $response->type, message: $response->message"];
                     }
                 default:
-                    return [self::TRANSACTION_FAILURE, "HTTP Error $httpcode. Report not sent. curl error: $curlerrorcode."];
+                    return [self::TRANSACTION_FAILURE,
+                        "HTTP Error $httpcode. Report not sent. curl error: $curlerrorcode."];
             }
         } else {
             // ... no JSON response from Assyst, but we can perform some basic checks
             switch ($httpcode) {
                 case 401: /* Unauthorized */
-                    return [self::TRANSACTION_FAILURE, "HTTP Error 401: Unauthorized. Check Assyst API Username and Password."];
+                    return [self::TRANSACTION_FAILURE,
+                        "HTTP Error 401: Unauthorized. Check Assyst API Username and Password."];
                 default:
-                    return [self::TRANSACTION_FAILURE, "HTTP Error $httpcode. Report not sent. curl error: $curlerrorcode."];
+                    return [self::TRANSACTION_FAILURE,
+                        "HTTP Error $httpcode. Report not sent. curl error: $curlerrorcode."];
             }
-            
         }
     }
 
@@ -253,16 +280,18 @@ class faultreport {
                 break;
             case self::TRANSACTION_RETRY_WITH_DEFAULT:
                 // ... perform a one-time retry forcing the default username
-                [$transactionstatus, $externalidorerrormsg] = self::send_report($user->username, $user->username, $title, $description, true);
+                [$transactionstatus, $externalidorerrormsg] =
+                    self::send_report($user->username, $user->username, $title, $description, true);
 
-                if($transactionstatus == self::TRANSACTION_SUCCESS) {
+                if ($transactionstatus == self::TRANSACTION_SUCCESS) {
                     $report->status = self::STATUS_SENT;
                     $report->externalid = $externalidorerrormsg;
                 } else {
                     $report->status = self::STATUS_SEND_FAILURE;
                     $report->errormsg = $externalidorerrormsg;
 
-                    $transactionstatus = self::TRANSACTION_FAILURE; // ... specify the error in case of retry failure due to the fallback username being incorrect
+                    // ... specify failure in case of retry failure due to the fallback username being incorrect
+                    $transactionstatus = self::TRANSACTION_FAILURE;
                 }
                 break;
 

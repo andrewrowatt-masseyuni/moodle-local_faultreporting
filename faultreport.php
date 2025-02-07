@@ -68,7 +68,8 @@ if ($form->is_cancelled()) {
         "Description:\n$formdata->description\n\n" .
         "Diagnostic Info:\n$formdata->diagnosticinfo";
 
-    [$transactionstatus, $externalidorerrormsg] = faultreport::save_and_send_report($USER->id, 'Log a Stream Request', $description);
+    [$transactionstatus, $externalidorerrormsg] = faultreport::save_and_send_report(
+        $USER->id, 'Log a Stream Request', $description);
 
     switch ($transactionstatus) {
         case faultreport::TRANSACTION_SUCCESS:
