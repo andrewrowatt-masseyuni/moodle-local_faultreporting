@@ -34,6 +34,7 @@ $string['assystapiurldesc'] = 'Assyst API Events endpoint';
 $string['assystapiusername'] = 'Assyst API username';
 $string['assystapiusernamedesc'] = 'Assyst API username';
 $string['basicinformationgroup'] = 'General';
+$string['defaultsummary'] = 'Log a Stream Request';
 $string['description'] = 'Description';
 $string['description_help'] = 'Include as much information as possible.';
 $string['diagnosticinformation'] = 'Diagnostic information for support personal';

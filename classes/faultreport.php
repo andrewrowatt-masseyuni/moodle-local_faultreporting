@@ -60,13 +60,13 @@ class faultreport {
      *
      * @param string $reportedby
      * @param string $affecteduser
-     * @param string $title
+     * @param string $summary
      * @param string $description
      * @return bool|string
      */
     public static function build_assyst_json_payload(
             string $reportedby, string $affecteduser,
-            string $title, string $description): string {
+            string $summary, string $description): string {
         $reportedbyshortcode = strtoupper($reportedby);
         $affectedusershortcode = strtoupper($affecteduser);
 
@@ -74,7 +74,7 @@ class faultreport {
             'entityDefinitionId' => 319,
             'entityDefinitionType' => 2,
             'eventTypeEnum' => 'INCIDENT',
-            'shortDescription' => $title,
+            'shortDescription' => $summary,
             'remarks' => $description,
             'affectedUser' => [
                 'resolvingParameters' => [[
@@ -130,17 +130,20 @@ class faultreport {
     }
 
     /**
-     * Sends a report
+     * Sends a report to Assyst using the Assyst API and curl
      *
      * Returns false if an error occuring during then send process
      * Does not update the database
      *
-     * @param mixed $data
-     * @return string externalid
+     * @param  string $reportedby
+     * @param  string $affecteduser
+     * @param  string $summary
+     * @param  string $description
+     * @return array transaction status, externalid or error message
      */
     public static function send_report(
             string $reportedby, string $affecteduser,
-            string $title, string $description,
+            string $summary, string $description,
             bool $useaffecteduserfallback = false): array {
         global $DB;
 
@@ -156,7 +159,7 @@ class faultreport {
 
         $auth = base64_encode("$username:$password");
 
-        $payload = self::build_assyst_json_payload($reportedby, $affecteduser, $title, $description);
+        $payload = self::build_assyst_json_payload($reportedby, $affecteduser, $summary, $description);
 
         $ch = curl_init($endpoint);
 
@@ -170,11 +173,9 @@ class faultreport {
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
         curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-
-        $localhost = ['127.0.0.1', '::1'];
-
-        // ... if localhost, disable SSL verification
-        if (in_array($_SERVER['REMOTE_ADDR'], $localhost)) {
+        
+        if (util::is_localhost()) {
+            // ... if localhost, disable SSL verification
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         }
@@ -235,14 +236,14 @@ class faultreport {
      * @param mixed $data
      * @return int
      */
-    public static function save_report(int $userid, string $title, string $description): int {
+    public static function save_report(int $userid, string $summary, string $description): int {
         global $DB;
 
         $time = time();
 
         $data = [
             'userid' => $userid,
-            'title' => $title,
+            'summary' => $summary,
             'description' => $description,
             'externalid' => '',
             'status' => self::STATUS_NEW,
@@ -262,16 +263,16 @@ class faultreport {
      * @param mixed $data
      * @return string
      */
-    public static function save_and_send_report(int $userid, string $title, string $description): array {
+    public static function save_and_send_report(int $userid, string $summary, string $description): array {
         global $DB;
 
-        $id = self::save_report($userid, $title, $description);
+        $id = self::save_report($userid, $summary, $description);
 
         $report = $DB->get_record('local_faultreporting', ['id' => $id], '*', MUST_EXIST);
 
         $user = \core_user::get_user($userid);
 
-        [$transactionstatus, $externalidorerrormsg] = self::send_report($user->username, $user->username, $title, $description);
+        [$transactionstatus, $externalidorerrormsg] = self::send_report($user->username, $user->username, $summary, $description);
 
         switch ($transactionstatus) {
             case self::TRANSACTION_SUCCESS:
@@ -281,7 +282,7 @@ class faultreport {
             case self::TRANSACTION_RETRY_WITH_DEFAULT:
                 // ... perform a one-time retry forcing the default username
                 [$transactionstatus, $externalidorerrormsg] =
-                    self::send_report($user->username, $user->username, $title, $description, true);
+                    self::send_report($user->username, $user->username, $summary, $description, true);
 
                 if ($transactionstatus == self::TRANSACTION_SUCCESS) {
                     $report->status = self::STATUS_SENT;

@@ -28,9 +28,10 @@
  * @param navigation_node $node Course node.
  */
 function local_faultreporting_extend_navigation_frontpage(navigation_node $frontpage) {
+    global $PAGE; 
     $frontpage->add(
         get_string('pluginname', 'local_faultreporting'),
-        new moodle_url('/local/faultreporting/faultreport.php'),
+        new moodle_url('/local/faultreporting/faultreport.php',['page' => $PAGE->title, 'url' => $PAGE->url]),
         navigation_node::TYPE_CUSTOM,
     );
 }
@@ -41,10 +42,12 @@ function local_faultreporting_extend_navigation_frontpage(navigation_node $front
  * @param navigation_node $node Course node.
  */
 function local_faultreporting_extend_navigation_course(navigation_node $node) {
+    global $PAGE; 
+
     if (isloggedin() && !isguestuser()) {
         $node->add(
             get_string('pluginname', 'local_faultreporting'),
-            new moodle_url('/local/faultreporting/faultreport.php'),
+            new moodle_url('/local/faultreporting/faultreport.php',['page' => $PAGE->title, 'url' => $PAGE->url]),
             navigation_node::TYPE_CUSTOM,
         );
     }

@@ -35,13 +35,15 @@ $frompage = optional_param('page', '-', PARAM_TEXT);
 $fromurl = optional_param('url', '-', PARAM_TEXT);
 
 if ($fromurl == '-' && array_key_exists('HTTP_REFERER', $_SERVER)) {
-    $fromurl = $_SERVER['HTTP_REFERER'];
+        $fromurl = $_SERVER['HTTP_REFERER'];
 }
+
 
 $url = new moodle_url('/local/faultreporting/faultreport.php', []);
 $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
 
+$PAGE->set_title(get_string('pluginname', 'local_faultreporting'));
 $PAGE->set_heading($SITE->fullname);
 
 $clientinfo = util::get_client_info();
@@ -54,7 +56,7 @@ $diagnosticinfo =
     "Useragent: $_SERVER[HTTP_USER_AGENT]\n\n";
 
 $form = new \local_faultreporting\form\faultreport(null,
- ['diagnosticinfo' => $diagnosticinfo]);
+ ['diagnosticinfo' => $diagnosticinfo,'fromurl' => $fromurl]);
 
 if ($form->is_cancelled()) {
     // If there is a cancel element on the form, and it was pressed,
@@ -62,6 +64,7 @@ if ($form->is_cancelled()) {
     // You can handle the cancel operation here.
 } else if ($formdata = $form->get_data()) {
     $description =
+        "Username: $USER->username\n" .
         "Name: $formdata->name\n" .
         "Email: $formdata->email\n" .
         "Phone: $formdata->phone\n\n" .
@@ -69,20 +72,26 @@ if ($form->is_cancelled()) {
         "Diagnostic Info:\n$formdata->diagnosticinfo";
 
     [$transactionstatus, $externalidorerrormsg] = faultreport::save_and_send_report(
-        $USER->id, 'Log a Stream Request', $description);
+        $USER->id, get_string('defaultsummary', 'local_faultreporting'), $description);
 
     switch ($transactionstatus) {
         case faultreport::TRANSACTION_SUCCESS:
             $message = get_string('reportsuccessful', 'local_faultreporting', ['externalid' => $externalidorerrormsg]);
             $messagetype = \core\output\notification::NOTIFY_SUCCESS;
             break;
-        case faultreport::TRANSACTION_FAILURE:
+        default:
             $message = get_string('reporterror', 'local_faultreporting');
             $messagetype = \core\output\notification::NOTIFY_ERROR;
             break;
     }
 
-    redirect(new moodle_url('/my'), $message, null, $messagetype);
+    if ($formdata->fromurl == '-') {
+        $redirecturl = new moodle_url('/my/');
+    } else {
+        $redirecturl = new moodle_url($formdata->fromurl);
+    }
+
+    redirect($redirecturl, $message, null, $messagetype);
 }
 
 echo $OUTPUT->header();

@@ -41,6 +41,9 @@ class faultreport extends \moodleform {
         $mform->addElement('hidden', 'diagnosticinfo', $this->_customdata['diagnosticinfo']);
         $mform->setType('diagnosticinfo', PARAM_TEXT);
 
+        $mform->addElement('hidden', 'fromurl', $this->_customdata['fromurl']);
+        $mform->setType('fromurl', PARAM_TEXT);
+
         $mform->addElement('header', 'general', get_string('basicinformationgroup', 'local_faultreporting'));
 
         $mform->addElement('text', 'username',

@@ -94,4 +94,15 @@ class util {
             'operatingsystem' => $dd->getOs('name'),
         ];
     }
+
+    /**
+     * Returns true current user is on localhost
+     *
+     * @return bool
+     */
+    public static function is_localhost(): bool {
+        $localhost = ['127.0.0.1', '::1'];
+
+        return in_array($_SERVER['REMOTE_ADDR'], $localhost);
+    }
 }
