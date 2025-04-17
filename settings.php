@@ -25,8 +25,22 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
+    $ADMIN->add(
+        'localplugins',
+        new admin_category('faultreportingfolder', get_string('pluginname', 'local_faultreporting'), false)
+    );
+
+    $ADMIN->add(
+        'faultreportingfolder',
+        new admin_externalpage(
+            'local_faultreporting_faultreports',
+            get_string('faultreports', 'local_faultreporting'),
+            new moodle_url('/local/faultreporting/faultreports.php', []),
+            'moodle/site:config'
+        )
+    );
+
     $settings = new admin_settingpage('local_faultreporting', get_string('pluginname', 'local_faultreporting'));
-    $ADMIN->add('localplugins', $settings);
 
     if ($ADMIN->fulltree) {
         $settings->add(new admin_setting_configtext(
@@ -58,6 +72,8 @@ if ($hassiteconfig) {
             get_string('assystapiaffecteduserfallbackdesc', 'local_faultreporting'),
             'ASSYSTSTUDENT',
         ));
+
+        $ADMIN->add('faultreportingfolder', $settings);
 
     }
 }

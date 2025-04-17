@@ -38,6 +38,7 @@ $string['defaultsummary'] = 'Log a Stream Request';
 $string['description'] = 'Description';
 $string['description_help'] = 'Include as much information as possible.';
 $string['diagnosticinformation'] = 'Diagnostic information for support personal';
+$string['faultreports'] = 'Fault reports';
 $string['name'] = 'Name';
 $string['pluginname'] = 'Fault Reporting';
 $string['privacy:metadata'] = 'The Fault Reporting plugin doesn\'t store any personal data.';
