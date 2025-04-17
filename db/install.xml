@@ -10,6 +10,7 @@
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Id of user who created this report"/>
         <FIELD NAME="summary" TYPE="char" LENGTH="200" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="description" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="payload" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="externalid" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="status" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="errormsg" TYPE="text" NOTNULL="true" SEQUENCE="false"/>

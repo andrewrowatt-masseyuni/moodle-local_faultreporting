@@ -63,7 +63,7 @@ if ($form->is_cancelled()) {
     // then the `is_cancelled()` function will return true.
     // You can handle the cancel operation here.
 } else if ($formdata = $form->get_data()) {
-    $description =
+    $payload =
         "Username: $USER->username\n" .
         "Name: $formdata->name\n" .
         "Email: $formdata->email\n" .
@@ -72,7 +72,7 @@ if ($form->is_cancelled()) {
         "Diagnostic Info:\n$formdata->diagnosticinfo";
 
     [$transactionstatus, $externalidorerrormsg] = faultreport::save_and_send_report(
-        $USER->id, get_string('defaultsummary', 'local_faultreporting'), $description);
+        $USER->id, get_string('defaultsummary', 'local_faultreporting'), $formdata->description, $payload);
 
     switch ($transactionstatus) {
         case faultreport::TRANSACTION_SUCCESS:

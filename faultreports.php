@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_faultreporting\faultreport;
+
 require('../../config.php');
 
 require_login();
@@ -29,8 +31,30 @@ require_login();
 $url = new moodle_url('/local/faultreporting/faultreports.php', []);
 $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
-
 $PAGE->set_heading($SITE->fullname);
+$PAGE->set_title(get_string('pluginname', 'local_faultreporting'));
+
+require_capability('report/log:view', $PAGE->context); // Need to confirm this is the right capability.
+
+$reports = [];
+
+foreach(faultreport::get_reports() as $reportobject) {
+    $reportarray = (array)$reportobject;
+    if($reportarray['status'] == faultreport::STATUS_SEND_FAILURE) {
+        $reportarray += [
+            'canresend' => true,
+        ];
+    }
+
+    $reports[] = $reportarray;
+}
+
+
+$data = [
+    'sesskey' => sesskey(),
+    'reports' => $reports,
+];
+
 echo $OUTPUT->header();
-echo 'Here';
+echo $OUTPUT->render_from_template('local_faultreporting/faultreports', $data);
 echo $OUTPUT->footer();

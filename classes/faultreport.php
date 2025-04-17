@@ -236,7 +236,7 @@ class faultreport {
      * @param mixed $data
      * @return int
      */
-    public static function save_report(int $userid, string $summary, string $description): int {
+    public static function save_report(int $userid, string $summary, string $description, string $payload): int {
         global $DB;
 
         $time = time();
@@ -245,6 +245,7 @@ class faultreport {
             'userid' => $userid,
             'summary' => $summary,
             'description' => $description,
+            'payload' => $payload,
             'externalid' => '',
             'status' => self::STATUS_NEW,
             'errormsg' => '',
@@ -263,10 +264,10 @@ class faultreport {
      * @param mixed $data
      * @return string
      */
-    public static function save_and_send_report(int $userid, string $summary, string $description): array {
+    public static function save_and_send_report(int $userid, string $summary, string $description, string $payload): array {
         global $DB;
 
-        $id = self::save_report($userid, $summary, $description);
+        $id = self::save_report($userid, $summary, $description, $payload);
 
         $report = $DB->get_record('local_faultreporting', ['id' => $id], '*', MUST_EXIST);
 
@@ -305,5 +306,13 @@ class faultreport {
         $DB->update_record('local_faultreporting', $report);
 
         return [$transactionstatus, $externalidorerrormsg];
+    }
+
+    public static function get_reports(): array {
+        global $DB;
+
+        $reports = $DB->get_records('local_faultreporting', [], 'timecreated DESC');
+
+        return $reports;
     }
 }
