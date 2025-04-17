@@ -315,4 +315,17 @@ class faultreport {
 
         return $reports;
     }
+
+    public static function get_status_description($status): string {
+        switch ($status) {
+            case self::STATUS_NEW:
+                return get_string('statusnew', 'local_faultreporting');;
+            case self::STATUS_SENT:
+                return get_string('statussent', 'local_faultreporting');;
+            case self::STATUS_SEND_FAILURE:
+                return get_string('statussendfailure', 'local_faultreporting');;
+            default:
+                return '';
+        }
+    }
 }

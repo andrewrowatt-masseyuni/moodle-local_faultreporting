@@ -36,11 +36,50 @@ $PAGE->set_title(get_string('pluginname', 'local_faultreporting'));
 
 require_capability('report/log:view', $PAGE->context); // Need to confirm this is the right capability.
 
+$action = optional_param('action', null, PARAM_TEXT);
+$reportid = optional_param('id', null, PARAM_INT);
+
+if ($action && $reportid) {
+    require_sesskey();
+
+    switch ($action) {
+        case 'resend':
+            // Do something with the report.
+
+            break;
+    }
+
+    // Redirect as Moodle good practice to remove the session key from the URL.
+    redirect($url,'[Feedback]');
+}
+
 $reports = [];
 
 foreach(faultreport::get_reports() as $reportobject) {
     $reportarray = (array)$reportobject;
-    if($reportarray['status'] == faultreport::STATUS_SEND_FAILURE) {
+    $reportarray += [
+        'statusdescription' => faultreport::get_status_description($reportarray['status']),
+    ];
+
+    switch($reportarray['status']){
+        case faultreport::STATUS_NEW:
+            $reportarray += [
+                'statusclass' => 'warning',
+            ];
+            break;
+        case faultreport::STATUS_SENT:
+            $reportarray += [
+                'statusclass' => 'success',
+            ];
+            break;
+        case faultreport::STATUS_SEND_FAILURE:
+            $reportarray += [
+                'statusclass' => 'danger',
+            ];
+            break;
+    }
+    
+    if($reportarray['status'] == faultreport::STATUS_SEND_FAILURE || $reportarray['status'] == faultreport::STATUS_NEW) {
         $reportarray += [
             'canresend' => true,
         ];

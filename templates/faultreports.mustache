@@ -28,10 +28,17 @@ Here
     {{#reports}}
     <li class="list-group-item">
         <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1">{{#showsortorder}}<span class="badge badge-secondary">{{sortorder}}</span> {{/showsortorder}}{{title}}</h5>
+            <h5 class="mb-1"><span class="badge badge-{{statusclass}}">{{statusdescription}}</span></h5>
             <small>{{summary}}</small>
         </div>
         <p class="mb-1">{{description}}</p>
+        <div class="d-flex justify-content-between">
+            <small>{{#str}} user, core {{/str}}: {{userid}}</small>
+        </div>
+        <div class="d-flex justify-content-end" style="gap: 1em;">
+            {{#canresend}}<a role="button" href="faultreports.php?sesskey={{sesskey}}&courseid={{courseid}}&action=resend&id={{id}}">{{#pix}} t/reload, core, {{#str}} resend, local_faultreporting {{/str}} {{/pix}}{{#str}} resend, local_faultreporting {{/str}}</a>{{/canresend}}
+            <a role="button" href="faultreports.php?sesskey={{sesskey}}&courseid={{courseid}}&action=delete&id={{id}}">{{#pix}} t/delete, core, {{#str}} delete, core {{/str}} {{/pix}}{{#str}} delete, core {{/str}}</a>
+        </div>
     </li>
 {{/reports}}
 </ul>
