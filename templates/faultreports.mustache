@@ -23,18 +23,23 @@
     {
     }
 }}
-Here
 <ul class="list-group pb-3">
     {{#reports}}
     <li class="list-group-item">
         <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1"><span class="badge badge-{{statusclass}}">{{statusdescription}}</span></h5>
+            <h5 class="mb-1"><span style="font-weight: 500;" class="badge badge-{{statusclass}}">{{statusdescription}}{{#haserrormessage}} - {{#str}} error, core {{/str}}: <i>{{errormsg}}</i>{{/haserrormessage}}</span>
+            {{#hasexternalid}}<small>{{#str}} externalid, local_faultreporting {{/str}}: <a target="_blank" href="#">{{externalid}}</a></small>{{/hasexternalid}}
+            </h5>
             <small>{{summary}}</small>
         </div>
         <p class="mb-1">{{description}}</p>
-        <div class="d-flex justify-content-between">
-            <small>{{#str}} user, core {{/str}}: {{userid}}</small>
-        </div>
+        <hr />
+        <p class="mb-1">
+            <small>{{#str}} user, core {{/str}}: <a target="_blank" href="{{globals.config.wwwroot}}/user/profile.php?id={{userid}}">{{user}} ({{username}})</a></small>
+        </p>
+        <p class="mb-1">
+            <small>{{#str}} date, core {{/str}}: {{#userdate}} {{timemodified}}, {{#str}} strftimedate, core_langconfig {{/str}} {{/userdate}}</small>
+        </p>
         <div class="d-flex justify-content-end" style="gap: 1em;">
             {{#canresend}}<a role="button" href="faultreports.php?sesskey={{sesskey}}&courseid={{courseid}}&action=resend&id={{id}}">{{#pix}} t/reload, core, {{#str}} resend, local_faultreporting {{/str}} {{/pix}}{{#str}} resend, local_faultreporting {{/str}}</a>{{/canresend}}
             <a role="button" href="faultreports.php?sesskey={{sesskey}}&courseid={{courseid}}&action=delete&id={{id}}">{{#pix}} t/delete, core, {{#str}} delete, core {{/str}} {{/pix}}{{#str}} delete, core {{/str}}</a>
@@ -42,4 +47,3 @@ Here
     </li>
 {{/reports}}
 </ul>
-<hr />

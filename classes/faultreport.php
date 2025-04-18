@@ -141,7 +141,7 @@ class faultreport {
      * @param  string $description
      * @return array transaction status, externalid or error message
      */
-    public static function send_report(
+    public static function send_report_to_assyst(
             string $reportedby, string $affecteduser,
             string $summary, string $description,
             bool $useaffecteduserfallback = false): array {
@@ -257,23 +257,22 @@ class faultreport {
     }
 
     /**
-     * Saves a report to the database and sends it
+     * Sends a report. Can also be used to resend a report
      *
      * Returns the status of the transaction
      *
-     * @param mixed $data
-     * @return string
+     * @param  int $id
+     * @return array transaction status, externalid or error message
      */
-    public static function save_and_send_report(int $userid, string $summary, string $description, string $payload): array {
-        global $DB;
 
-        $id = self::save_report($userid, $summary, $description, $payload);
+    public static function send_report(int $id): array {
+        global $DB;
 
         $report = $DB->get_record('local_faultreporting', ['id' => $id], '*', MUST_EXIST);
 
-        $user = \core_user::get_user($userid);
+        $user = \core_user::get_user($report->userid);
 
-        [$transactionstatus, $externalidorerrormsg] = self::send_report($user->username, $user->username, $summary, $description);
+        [$transactionstatus, $externalidorerrormsg] = self::send_report_to_assyst($user->username, $user->username, $report->summary, $report->payload);
 
         switch ($transactionstatus) {
             case self::TRANSACTION_SUCCESS:
@@ -283,7 +282,7 @@ class faultreport {
             case self::TRANSACTION_RETRY_WITH_DEFAULT:
                 // ... perform a one-time retry forcing the default username
                 [$transactionstatus, $externalidorerrormsg] =
-                    self::send_report($user->username, $user->username, $summary, $description, true);
+                    self::send_report_to_assyst($user->username, $user->username, $report->summary, $report->payload, true);
 
                 if ($transactionstatus == self::TRANSACTION_SUCCESS) {
                     $report->status = self::STATUS_SENT;
@@ -308,12 +307,35 @@ class faultreport {
         return [$transactionstatus, $externalidorerrormsg];
     }
 
+    /**
+     * Saves a report to the database and sends it
+     *
+     * Returns the status of the transaction
+     *
+     * @param mixed $data
+     * @return string
+     */
+    public static function save_and_send_report(int $userid, string $summary, string $description, string $payload): array {
+        $id = self::save_report($userid, $summary, $description, $payload);
+        return self::send_report($id);
+    }
+
+    /**
+     * Returns all reports from the database
+     *
+     * @return array
+     */
+
     public static function get_reports(): array {
         global $DB;
 
-        $reports = $DB->get_records('local_faultreporting', [], 'timecreated DESC');
+        $sql = 'SELECT fr.*,
+            trim(concat(u.firstname, \' \', u.lastname)) as user,
+            u.username as username
+            FROM {local_faultreporting} fr
+            JOIN {user} u ON u.id = fr.userid order by case when fr.status = 1 then -1 else fr.status end desc, fr.timecreated desc';
 
-        return $reports;
+        return $DB->get_records_sql($sql);
     }
 
     public static function get_status_description($status): string {

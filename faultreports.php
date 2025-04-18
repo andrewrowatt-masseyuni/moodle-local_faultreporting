@@ -31,8 +31,8 @@ require_login();
 $url = new moodle_url('/local/faultreporting/faultreports.php', []);
 $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
-$PAGE->set_heading($SITE->fullname);
-$PAGE->set_title(get_string('pluginname', 'local_faultreporting'));
+$PAGE->set_heading(get_string('faultreports', 'local_faultreporting'));
+$PAGE->set_title(get_string('faultreports', 'local_faultreporting'));
 
 require_capability('report/log:view', $PAGE->context); // Need to confirm this is the right capability.
 
@@ -44,13 +44,21 @@ if ($action && $reportid) {
 
     switch ($action) {
         case 'resend':
-            // Do something with the report.
+            [$transactionstatus, $externalidorerrormsg] = faultreport::send_report($reportid);
+        
+            switch ($transactionstatus) {
+                case faultreport::TRANSACTION_SUCCESS:
+                    $message = get_string('reportresendsuccessful', 'local_faultreporting', ['externalid' => $externalidorerrormsg]);
+                    $messagetype = \core\output\notification::NOTIFY_SUCCESS;
+                    break;
+                default:
+                    $message = get_string('reporterror', 'local_faultreporting');
+                    $messagetype = \core\output\notification::NOTIFY_ERROR;
+                    break;
+            }
 
-            break;
+            redirect($url, $message, null, $messagetype);
     }
-
-    // Redirect as Moodle good practice to remove the session key from the URL.
-    redirect($url,'[Feedback]');
 }
 
 $reports = [];
@@ -65,16 +73,19 @@ foreach(faultreport::get_reports() as $reportobject) {
         case faultreport::STATUS_NEW:
             $reportarray += [
                 'statusclass' => 'warning',
+                'haserrormessage' => $reportarray['errormsg'],
             ];
             break;
         case faultreport::STATUS_SENT:
             $reportarray += [
                 'statusclass' => 'success',
+                'hasexternalid' => true,
             ];
             break;
         case faultreport::STATUS_SEND_FAILURE:
             $reportarray += [
                 'statusclass' => 'danger',
+                'haserrormessage' => $reportarray['errormsg'],
             ];
             break;
     }
