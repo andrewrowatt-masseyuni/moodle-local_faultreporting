@@ -66,26 +66,28 @@ $reports = [];
 
 foreach (faultreport::get_reports() as $reportobject) {
     $reportarray = (array)$reportobject;
+    [$shortcode, $description, $cssclasshint] = faultreport::get_status_description($reportarray['status']);
+
     $reportarray += [
-        'statusdescription' => faultreport::get_status_description($reportarray['status']),
+        'statusshortcode' => $shortcode,
+        'statusdescription' => $description,
+        'statusclass' => $cssclasshint,
     ];
 
     switch($reportarray['status']){
         case faultreport::STATUS_NEW:
             $reportarray += [
-                'statusclass' => 'warning',
                 'haserrormessage' => $reportarray['errormsg'],
+                'showstatusdescription' => true,
             ];
             break;
         case faultreport::STATUS_SENT:
             $reportarray += [
-                'statusclass' => 'success',
                 'hasexternalid' => true,
             ];
             break;
         case faultreport::STATUS_SEND_FAILURE:
             $reportarray += [
-                'statusclass' => 'danger',
                 'haserrormessage' => $reportarray['errormsg'],
             ];
             break;

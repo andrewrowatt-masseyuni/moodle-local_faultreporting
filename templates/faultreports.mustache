@@ -26,12 +26,11 @@
 <ul class="list-group pb-3">
     {{#reports}}
     <li class="list-group-item">
-        <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1"><span style="font-weight: 500;" class="badge badge-{{statusclass}}">{{statusdescription}}{{#haserrormessage}} - {{#str}} error, core {{/str}}: <i>{{errormsg}}</i>{{/haserrormessage}}</span>
-            {{#hasexternalid}}<small>{{#str}} externalid, local_faultreporting {{/str}}: <a target="_blank" href="#">{{externalid}}</a></small>{{/hasexternalid}}
-            </h5>
-            <small>{{summary}}</small>
+        <div class="w-100">
+            <h5 class="mb-1"><span style="font-weight: 500;" class="badge badge-{{statusclass}}">{{statusshortcode}}{{#haserrormessage}} - <i>{{errormsg}}</i>{{/haserrormessage}}</span>{{#showstatusdescription}} <span style="font-weight: 500;" class="badge badge-secondary"><i class="fa fa-info-circle"></i> {{statusdescription}}</span>{{/showstatusdescription}}{{#hasexternalid}} <small>{{#str}} externalid, local_faultreporting {{/str}}: <a target="_blank" href="#">{{externalid}}</a></small>{{/hasexternalid}}</h5>
         </div>
+        <hr />
+        <h6 class="text-uppercase">Description</h6>
         <p class="mb-1">{{description}}</p>
         <hr />
         <p class="mb-1">

@@ -343,18 +343,24 @@ class faultreport {
      * Returns the status description for a given status code
      *
      * @param int $status
-     * @return string
+     * @return array shortcode, long description, bootstrap css class hint
      */
-    public static function get_status_description($status): string {
+    public static function get_status_description($status): array {
         switch ($status) {
             case self::STATUS_NEW:
-                return get_string('statusnew', 'local_faultreporting');;
+                return ['New',
+                    get_string('statusnew', 'local_faultreporting'),
+                    'warning'];
             case self::STATUS_SENT:
-                return get_string('statussent', 'local_faultreporting');;
+                return ['Ok',
+                    get_string('statussent', 'local_faultreporting'),
+                    'success'];
             case self::STATUS_SEND_FAILURE:
-                return get_string('statussendfailure', 'local_faultreporting');;
+                return ['Error',
+                    get_string('statussendfailure', 'local_faultreporting'),
+                    'danger'];
             default:
-                return '';
+                throw new \moodle_exception("Unknown status code: $status");
         }
     }
 }
