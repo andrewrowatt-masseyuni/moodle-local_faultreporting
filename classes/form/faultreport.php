@@ -82,7 +82,7 @@ class faultreport extends \moodleform {
             'alert alert-info help_text', ['style' => 'margin-left: calc(25% + 7px );']));
 
         $mform->addElement('header', 'diagnosticinformation', get_string('diagnosticinformation', 'local_faultreporting'));
-        // $mform->setExpanded('diagnosticinformation', false); // ...collapse by default
+        $mform->setExpanded('diagnosticinformation', false); // Collapse by default.
 
         $mform->addElement('html', html_writer::tag(
             'div',

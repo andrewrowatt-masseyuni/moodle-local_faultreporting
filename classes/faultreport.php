@@ -173,7 +173,7 @@ class faultreport {
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
         curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-        
+
         if (util::is_localhost()) {
             // ... if localhost, disable SSL verification
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
@@ -264,7 +264,6 @@ class faultreport {
      * @param  int $id
      * @return array transaction status, externalid or error message
      */
-
     public static function send_report(int $id): array {
         global $DB;
 
@@ -272,7 +271,9 @@ class faultreport {
 
         $user = \core_user::get_user($report->userid);
 
-        [$transactionstatus, $externalidorerrormsg] = self::send_report_to_assyst($user->username, $user->username, $report->summary, $report->payload);
+        [$transactionstatus, $externalidorerrormsg] = self::send_report_to_assyst(
+            $user->username, $user->username,
+            $report->summary, $report->payload);
 
         switch ($transactionstatus) {
             case self::TRANSACTION_SUCCESS:
@@ -325,7 +326,6 @@ class faultreport {
      *
      * @return array
      */
-
     public static function get_reports(): array {
         global $DB;
 
@@ -333,11 +333,18 @@ class faultreport {
             trim(concat(u.firstname, \' \', u.lastname)) as user,
             u.username as username
             FROM {local_faultreporting} fr
-            JOIN {user} u ON u.id = fr.userid order by case when fr.status = 1 then -1 else fr.status end desc, fr.timecreated desc';
+            JOIN {user} u ON u.id = fr.userid
+            order by case when fr.status = 1 then -1 else fr.status end desc, fr.timecreated desc';
 
         return $DB->get_records_sql($sql);
     }
 
+    /**
+     * Returns the status description for a given status code
+     *
+     * @param int $status
+     * @return string
+     */
     public static function get_status_description($status): string {
         switch ($status) {
             case self::STATUS_NEW:

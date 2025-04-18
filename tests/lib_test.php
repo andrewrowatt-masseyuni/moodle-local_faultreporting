@@ -40,7 +40,7 @@ final class lib_test extends \advanced_testcase {
 
         $this->resetAfterTest(true);
 
-        $id = faultreport::save_report(2, 'title', 'description','payload');
+        $id = faultreport::save_report(2, 'title', 'description', 'payload');
 
         $faultreport = $DB->get_record('local_faultreporting', ['id' => $id], '*', MUST_EXIST);
 

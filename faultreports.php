@@ -45,10 +45,11 @@ if ($action && $reportid) {
     switch ($action) {
         case 'resend':
             [$transactionstatus, $externalidorerrormsg] = faultreport::send_report($reportid);
-        
+
             switch ($transactionstatus) {
                 case faultreport::TRANSACTION_SUCCESS:
-                    $message = get_string('reportresendsuccessful', 'local_faultreporting', ['externalid' => $externalidorerrormsg]);
+                    $message = get_string('reportresendsuccessful',
+                        'local_faultreporting', ['externalid' => $externalidorerrormsg]);
                     $messagetype = \core\output\notification::NOTIFY_SUCCESS;
                     break;
                 default:
@@ -63,7 +64,7 @@ if ($action && $reportid) {
 
 $reports = [];
 
-foreach(faultreport::get_reports() as $reportobject) {
+foreach (faultreport::get_reports() as $reportobject) {
     $reportarray = (array)$reportobject;
     $reportarray += [
         'statusdescription' => faultreport::get_status_description($reportarray['status']),
@@ -89,8 +90,8 @@ foreach(faultreport::get_reports() as $reportobject) {
             ];
             break;
     }
-    
-    if($reportarray['status'] == faultreport::STATUS_SEND_FAILURE || $reportarray['status'] == faultreport::STATUS_NEW) {
+
+    if ($reportarray['status'] == faultreport::STATUS_SEND_FAILURE || $reportarray['status'] == faultreport::STATUS_NEW) {
         $reportarray += [
             'canresend' => true,
         ];

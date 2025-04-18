@@ -56,12 +56,20 @@ $diagnosticinfo =
     "Useragent: $_SERVER[HTTP_USER_AGENT]\n\n";
 
 $form = new \local_faultreporting\form\faultreport(null,
- ['diagnosticinfo' => $diagnosticinfo,'fromurl' => $fromurl]);
+    ['diagnosticinfo' => $diagnosticinfo, 'fromurl' => $fromurl]);
+
+if ($formdata->fromurl == '-') {
+    $redirecturl = new moodle_url('/my/');
+} else {
+    $redirecturl = new moodle_url($formdata->fromurl);
+}
 
 if ($form->is_cancelled()) {
     // If there is a cancel element on the form, and it was pressed,
     // then the `is_cancelled()` function will return true.
     // You can handle the cancel operation here.
+
+    redirect($redirecturl);
 } else if ($formdata = $form->get_data()) {
     $payload =
         "Username: $USER->username\n" .
@@ -83,12 +91,6 @@ if ($form->is_cancelled()) {
             $message = get_string('reporterror', 'local_faultreporting');
             $messagetype = \core\output\notification::NOTIFY_ERROR;
             break;
-    }
-
-    if ($formdata->fromurl == '-') {
-        $redirecturl = new moodle_url('/my/');
-    } else {
-        $redirecturl = new moodle_url($formdata->fromurl);
     }
 
     redirect($redirecturl, $message, null, $messagetype);
