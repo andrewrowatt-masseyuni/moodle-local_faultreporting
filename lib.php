@@ -25,7 +25,7 @@
 /**
  * Insert a link on the frontpage
  *
- * @param navigation_node $node Course node.
+ * @param navigation_node $frontpage Course node.
  */
 function local_faultreporting_extend_navigation_frontpage(navigation_node $frontpage) {
     global $PAGE;

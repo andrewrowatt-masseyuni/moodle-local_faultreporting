@@ -139,6 +139,7 @@ class faultreport {
      * @param  string $affecteduser
      * @param  string $summary
      * @param  string $description
+     * @param  bool $useaffecteduserfallback
      * @return array transaction status, externalid or error message
      */
     public static function send_report_to_assyst(
@@ -233,7 +234,10 @@ class faultreport {
      *
      * Returns the id of the saved report
      *
-     * @param mixed $data
+     * @param int $userid // Moodle user id.
+     * @param string $summary
+     * @param string $description
+     * @param string $payload // Full description of the fault that is passed to Assyst.
      * @return int
      */
     public static function save_report(int $userid, string $summary, string $description, string $payload): int {
@@ -313,8 +317,11 @@ class faultreport {
      *
      * Returns the status of the transaction
      *
-     * @param mixed $data
-     * @return string
+     * @param int $userid // Moodle user id.
+     * @param string $summary
+     * @param string $description
+     * @param string $payload // Full description of the fault that is passed to Assyst.
+     * @return array transaction status, externalid or error message
      */
     public static function save_and_send_report(int $userid, string $summary, string $description, string $payload): array {
         $id = self::save_report($userid, $summary, $description, $payload);
