@@ -27,7 +27,7 @@
     {{#reports}}
     <li class="list-group-item">
         <div class="w-100">
-            <h5 class="mb-1"><span style="font-weight: 500;" class="badge badge-{{statusclass}}">{{statusshortcode}}{{#haserrormessage}} - <i>{{errormsg}}</i>{{/haserrormessage}}</span>{{#showstatusdescription}} <span style="font-weight: 500;" class="badge badge-secondary"><i class="fa fa-info-circle"></i> {{statusdescription}}</span>{{/showstatusdescription}}{{#hasexternalid}} <small>{{#str}} externalid, local_faultreporting {{/str}}: <a target="_blank" href="#">{{externalid}}</a></small>{{/hasexternalid}}</h5>
+            <h5 class="mb-1"><span style="font-weight: 500;" class="badge badge-{{statusclass}}">{{statusshortcode}}{{#haserrormessage}} - <i>{{errormsg}}</i>{{/haserrormessage}}</span>{{#showstatusdescription}} <span style="font-weight: 500;" class="badge badge-secondary"><i class="fa fa-info-circle"></i> {{statusdescription}}</span>{{/showstatusdescription}}{{#hasexternalid}} <small>{{#str}} externalid, local_faultreporting {{/str}}: <a target="_blank" href="{{assysteventsearchurl}}">{{externalid}}</a></small>{{/hasexternalid}}</h5>
         </div>
         <hr />
         <h6 class="text-uppercase">Description</h6>

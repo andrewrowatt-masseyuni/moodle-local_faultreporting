@@ -73,6 +73,13 @@ if ($hassiteconfig) {
             'ASSYSTSTUDENT',
         ));
 
+        $settings->add(new admin_setting_configtext(
+            'local_faultreporting/assysteventsearchurl',
+            get_string('assysteventsearchurl', 'local_faultreporting'),
+            get_string('assysteventsearchurldesc', 'local_faultreporting'),
+            'https://massey-dev.saas.axiossystems.com/assystweb/application.do#eventsearch/EventSearchDelegatingDispatchAction.do?dispatch=monitorInit&ajaxMonitor=false&eventSearchContext&queryProfileForm.columnProfileId=5&event.lookup.eventRefRange=$externalid',
+        ));
+
         $ADMIN->add('faultreportingfolder', $settings);
 
     }

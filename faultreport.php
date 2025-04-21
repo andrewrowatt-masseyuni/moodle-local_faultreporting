@@ -58,12 +58,6 @@ $diagnosticinfo =
 $form = new \local_faultreporting\form\faultreport(null,
     ['diagnosticinfo' => $diagnosticinfo, 'fromurl' => $fromurl]);
 
-if ($formdata->fromurl == '-') {
-    $redirecturl = new moodle_url('/my/');
-} else {
-    $redirecturl = new moodle_url($formdata->fromurl);
-}
-
 if ($form->is_cancelled()) {
     // If there is a cancel element on the form, and it was pressed,
     // then the `is_cancelled()` function will return true.
@@ -71,13 +65,17 @@ if ($form->is_cancelled()) {
 
     redirect($redirecturl);
 } else if ($formdata = $form->get_data()) {
+    $moodlelogdate = new \DateTime();
+    $moodlelogdate->setTime(0, 0, 0, 0);
+
     $payload =
         "Username: $USER->username\n" .
         "Name: $formdata->name\n" .
         "Email: $formdata->email\n" .
         "Phone: $formdata->phone\n\n" .
         "Description:\n$formdata->description\n\n" .
-        "Diagnostic Info:\n$formdata->diagnosticinfo";
+        "Diagnostic Info:\n$formdata->diagnosticinfo" .
+        "Stream logs (on the day the fault was logged):\nhttps://stream.massey.ac.nz/report/log/index.php?chooselog=1&showusers=0&showcourses=0&id=1&user=$USER->id&date=$moodlelogdate&modid=&modaction=&origin=&edulevel=-1&logreader=logstore_standard";
 
     [$transactionstatus, $externalidorerrormsg] = faultreport::save_and_send_report(
         $USER->id, get_string('defaultsummary', 'local_faultreporting'), $formdata->description, $payload);
@@ -91,6 +89,12 @@ if ($form->is_cancelled()) {
             $message = get_string('reporterror', 'local_faultreporting');
             $messagetype = \core\output\notification::NOTIFY_ERROR;
             break;
+    }
+
+    if ($formdata->fromurl == '-') {
+        $redirecturl = new moodle_url('/my/');
+    } else {
+        $redirecturl = new moodle_url($formdata->fromurl);
     }
 
     redirect($redirecturl, $message, null, $messagetype);

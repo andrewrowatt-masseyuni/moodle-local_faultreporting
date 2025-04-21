@@ -370,4 +370,9 @@ class faultreport {
                 throw new \moodle_exception("Unknown status code: $status");
         }
     }
+
+    public static function get_assyst_event_search_url($externalid): string {
+        $url = get_config('local_faultreporting', 'assysteventsearchurl');
+        return str_replace('$externalid',$externalid,$url);    
+    }
 }

@@ -84,6 +84,7 @@ foreach (faultreport::get_reports() as $reportobject) {
         case faultreport::STATUS_SENT:
             $reportarray += [
                 'hasexternalid' => true,
+                'assysteventsearchurl' => faultreport::get_assyst_event_search_url($reportarray['externalid']),
             ];
             break;
         case faultreport::STATUS_SEND_FAILURE:
