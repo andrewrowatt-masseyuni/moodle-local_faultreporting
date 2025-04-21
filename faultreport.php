@@ -68,6 +68,7 @@ if ($form->is_cancelled()) {
     $moodlelogdate = new \DateTime();
     $moodlelogdate->setTime(0, 0, 0, 0);
 
+
     $payload =
         "Username: $USER->username\n" .
         "Name: $formdata->name\n" .
@@ -75,7 +76,10 @@ if ($form->is_cancelled()) {
         "Phone: $formdata->phone\n\n" .
         "Description:\n$formdata->description\n\n" .
         "Diagnostic Info:\n$formdata->diagnosticinfo" .
-        "Stream logs (on the day the fault was logged):\nhttps://stream.massey.ac.nz/report/log/index.php?chooselog=1&showusers=0&showcourses=0&id=1&user=$USER->id&date=$moodlelogdate&modid=&modaction=&origin=&edulevel=-1&logreader=logstore_standard";
+        "Stream logs (on the day the fault was logged):\n" .
+            "https://stream.massey.ac.nz/report/log/index.php?" .
+            "chooselog=1&showusers=0&showcourses=0&id=1&user=$USER->id&date=$moodlelogdate" .
+            "&modid=&modaction=&origin=&edulevel=-1&logreader=logstore_standard";
 
     [$transactionstatus, $externalidorerrormsg] = faultreport::save_and_send_report(
         $USER->id, get_string('defaultsummary', 'local_faultreporting'), $formdata->description, $payload);

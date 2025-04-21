@@ -371,8 +371,16 @@ class faultreport {
         }
     }
 
+    /**
+     * Returns the Assyst event search URL with the external ID replaced
+     *
+     * Used on the system administrator fault reports page
+     *
+     * @param string $externalid
+     * @return string
+     */
     public static function get_assyst_event_search_url($externalid): string {
         $url = get_config('local_faultreporting', 'assysteventsearchurl');
-        return str_replace('$externalid',$externalid,$url);    
+        return str_replace('$externalid', $externalid, $url);
     }
 }
