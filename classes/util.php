@@ -19,8 +19,8 @@ namespace local_faultreporting;
 defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->dirroot/user/profile/lib.php");
 
-require_once('thirdparty/spyc/Spyc.php');
-require_once('thirdparty/device-detector/autoload.php');
+require_once('../thirdparty/spyc/Spyc.php');
+require_once('../thirdparty/device-detector/autoload.php');
 
 use DeviceDetector\ClientHints;
 use DeviceDetector\DeviceDetector;

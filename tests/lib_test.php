@@ -47,4 +47,23 @@ final class lib_test extends \advanced_testcase {
         $this->assertEquals(2, $faultreport->userid);
         $this->assertEquals(faultreport::STATUS_NEW, $faultreport->status);
     }
+
+    /**
+     * Covers basic retrieving of fault reports
+     *
+     * @covers \local_faultreporting
+     */
+    public function test_get_faultreports(): void {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        faultreport::save_report(2, 'title1', 'description1', 'payload1');
+        faultreport::save_report(2, 'title2', 'description2', 'payload2');
+        faultreport::save_report(2, 'title3', 'description3', 'payload3');
+
+        $faultreports = faultreport::get_reports();
+
+        $this->assertEquals(3, count($faultreports));
+    }
 }
