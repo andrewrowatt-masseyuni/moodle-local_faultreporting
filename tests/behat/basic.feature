@@ -27,4 +27,3 @@ Feature: Basic tests for Fault Reporting
     And I follow "Fault Reporting"
     And I follow "Fault reports"
     Then I should see "test1"
-    
