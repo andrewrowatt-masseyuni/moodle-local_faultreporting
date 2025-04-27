@@ -1,6 +1,6 @@
 @local @local_faultreporting @javascript
 Feature: Basic tests for Fault Reporting
-  
+
   Scenario: Admin "Fault reports" page is available
     Given I log in as "admin"
     When I follow "Site administration"
@@ -27,3 +27,4 @@ Feature: Basic tests for Fault Reporting
     And I follow "Fault Reporting"
     And I follow "Fault reports"
     Then I should see "test1"
+    
