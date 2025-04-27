@@ -68,7 +68,7 @@ if ($form->is_cancelled()) {
     $moodlelogdate = new \DateTime();
     $moodlelogdate->setTime(0, 0, 0, 0);
     $moodlelogdateepoch = $moodlelogdate->getTimestamp();
-    
+
 
     $payload =
         "Username: $USER->username\n" .
