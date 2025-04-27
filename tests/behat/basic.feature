@@ -1,10 +1,14 @@
 @local @local_faultreporting
 Feature: Basic tests for Fault Reporting
 
-  @javascript
-  Scenario: Plugin local_faultreporting appears in the list of installed additional plugins
+  Scenario: Admin "Fault reports" page is available
     Given I log in as "admin"
-    When I navigate to "Plugins > Plugins overview" in site administration
-    And I follow "Additional plugins"
-    Then I should see "Fault Reporting"
-    And I should see "local_faultreporting"
+    When I navigate to "Plugins" in site administration
+    And I follow "Fault Reporting"
+    And I follow "Fault Reports"
+    Then I should see "No fault reports"
+
+  Scenario: As an Admin I can submit a fault report
+    Given I log in as "admin"
+    And I follow "Fault Reporting"
+    Then I should see "Create new fault report"

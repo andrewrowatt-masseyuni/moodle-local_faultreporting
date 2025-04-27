@@ -44,7 +44,7 @@ $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
 
 $PAGE->set_title(get_string('pluginname', 'local_faultreporting'));
-$PAGE->set_heading($SITE->fullname);
+$PAGE->set_heading(get_string('createnewfaultreport', 'local_faultreporting'));
 
 $clientinfo = util::get_client_info();
 
@@ -67,7 +67,8 @@ if ($form->is_cancelled()) {
 } else if ($formdata = $form->get_data()) {
     $moodlelogdate = new \DateTime();
     $moodlelogdate->setTime(0, 0, 0, 0);
-
+    $moodlelogdateepoch = $moodlelogdate->getTimestamp();
+    
 
     $payload =
         "Username: $USER->username\n" .
@@ -78,7 +79,7 @@ if ($form->is_cancelled()) {
         "Diagnostic Info:\n$formdata->diagnosticinfo" .
         "Stream logs (on the day the fault was logged):\n" .
             "https://stream.massey.ac.nz/report/log/index.php?" .
-            "chooselog=1&showusers=0&showcourses=0&id=1&user=$USER->id&date=$moodlelogdate" .
+            "chooselog=1&showusers=0&showcourses=0&id=1&user=$USER->id&date=$moodlelogdateepoch" .
             "&modid=&modaction=&origin=&edulevel=-1&logreader=logstore_standard";
 
     [$transactionstatus, $externalidorerrormsg] = faultreport::save_and_send_report(
