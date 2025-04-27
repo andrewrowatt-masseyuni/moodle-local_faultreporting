@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<libraries>
+    <library>
+        <location>thirdparty/device-detector</location>
+        <name>DeviceDetector</name>
+        <version>6.4.5</version>
+        <license>LGPL</license>
+        <licenseversion>3</licenseversion>
+    </library>
+    <library>
+        <location>thirdparty/spyc</location>
+        <name>Spyc</name>
+        <version>0.6.3</version>
+        <license>MIT License</license>
+        <licenseversion>1.0</licenseversion>
+    </library>
+</libraries>
