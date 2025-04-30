@@ -63,7 +63,7 @@ if ($form->is_cancelled()) {
     // then the `is_cancelled()` function will return true.
     // You can handle the cancel operation here.
 
-    redirect($redirecturl);
+    redirect(new moodle_url('/my/')); // To-do #3.
 } else if ($formdata = $form->get_data()) {
     $moodlelogdate = new \DateTime();
     $moodlelogdate->setTime(0, 0, 0, 0);
