@@ -1,4 +1,5 @@
 # Fault reporting
+[![moodle-docker CI](https://github.com/andrewrowatt-masseyuni/moodle-local_faultreporting/actions/workflows/moodle-ci.yml/badge.svg?branch=main)](https://github.com/andrewrowatt-masseyuni/moodle-local_faultreporting/actions/workflows/moodle-ci.yml)
 
 Provides a simple user-interface to gather information about technical (non-pedagogical) issues with the LMS and send them to a case management system e.g, Assyst.
 
