@@ -16,6 +16,8 @@
 
 namespace local_faultreporting;
 
+use stdClass;
+
 /**
  * Class faultreport
  *
@@ -333,17 +335,69 @@ class faultreport {
      *
      * @return array
      */
-    public static function get_reports(): array {
+    private static function get_reports_with_optional_filter(string $whereclause = '', array $params = []): array {
         global $DB;
 
-        $sql = 'SELECT fr.*,
-            trim(concat(u.firstname, \' \', u.lastname)) as user,
+        $sql = "SELECT fr.*,
+            trim(concat(u.firstname, ' ', u.lastname)) as user,
             u.username as username
             FROM {local_faultreporting} fr
             JOIN {user} u ON u.id = fr.userid
-            order by case when fr.status = 1 then -1 else fr.status end desc, fr.timecreated desc';
+            $whereclause
+            order by case when fr.status = 1 then -1 else fr.status end desc, fr.timecreated desc, fr.id desc";
 
-        return $DB->get_records_sql($sql);
+        return $DB->get_records_sql($sql, $params);
+    }
+
+    /**
+     * Returns all reports from the database
+     *
+     * @return array
+     */
+    public static function get_reports(): array {
+        return self::get_reports_with_optional_filter();
+    }
+
+    /**
+     * Returns all reports from the database for a given user
+     *
+     * @return array
+     */
+    public static function get_reports_by_user(int $userid): array {
+        $whereclause = 'WHERE (userid = :userid)';
+        $params = ['userid' => $userid];
+
+        return self::get_reports_with_optional_filter($whereclause, $params);
+    }
+
+    /**
+     * Returns all reports from the database for a given user
+     *
+     * @return array
+     */
+    public static function get_report_by_id(int $id): object {
+        $whereclause = 'WHERE (fr.id = :id)';
+        $params = ['id' => $id];
+
+        $reports = self::get_reports_with_optional_filter($whereclause, $params);
+        if (count($reports) == 0) {
+            throw new \moodle_exception('Report not found');
+        }
+
+        return reset($reports);
+    }
+
+    /**
+     * Deletes all reports for a given user
+     *
+     * Implemented for privacy provider
+     * 
+     * @param int $userid
+     */
+    public static function delete_user_reports(int $userid): void {
+        global $DB;
+
+        $DB->delete_records('local_faultreporting', ['userid' => $userid]);
     }
 
     /**
@@ -383,4 +437,6 @@ class faultreport {
         $url = get_config('local_faultreporting', 'assysteventsearchurl');
         return str_replace('$externalid', $externalid, $url);
     }
+
+
 }

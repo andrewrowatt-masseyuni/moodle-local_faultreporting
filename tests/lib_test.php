@@ -29,41 +29,51 @@ global $CFG;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class lib_test extends \advanced_testcase {
+    /** @var \stdClass User object to share across tests. */
+    protected \stdClass $user1;
+
+    /** @var \stdClass User object to share across tests. */
+    protected \stdClass $user2;
+
+    /** @var \stdClass User object to share across tests. */
+    protected \stdClass $user3;
 
     /**
-     * Covers basic adding and sending of a fault report
+     * {@inheritdoc}
+     */
+    protected function setUp(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $user1 = $this->getDataGenerator()->create_user();
+        $this->user1 = $user1;
+
+        $user2 = $this->getDataGenerator()->create_user();
+        $this->user2 = $user2;
+
+        $user3 = $this->getDataGenerator()->create_user();
+        $this->user3 = $user3;
+
+        faultreport::save_report($user1->id, 'title1', 'description1', 'payload1');
+        faultreport::save_report($user1->id, 'title2', 'description2', 'payload2');
+        faultreport::save_report($user2->id, 'title3', 'description3', 'payload3');
+        // Note there are no fault reports for user3.
+    }
+
+    /**
+     * Covers basic adding and retrieving of fault reports
      *
      * @covers \local_faultreporting
      */
     public function test_add_faultreport(): void {
-        global $DB;
+        $reports = faultreport::get_reports();
+        $this->assertEquals(3, count($reports));
 
-        $this->resetAfterTest(true);
+        $id = faultreport::save_report($this->user1->id, 'title', 'description', 'payload');
 
-        $id = faultreport::save_report(2, 'title', 'description', 'payload');
+        $faultreport = faultreport::get_report_by_id($id);
 
-        $faultreport = $DB->get_record('local_faultreporting', ['id' => $id], '*', MUST_EXIST);
-
-        $this->assertEquals(2, $faultreport->userid);
+        $this->assertEquals($this->user1->id, $faultreport->userid);
         $this->assertEquals(faultreport::STATUS_NEW, $faultreport->status);
-    }
-
-    /**
-     * Covers basic retrieving of fault reports
-     *
-     * @covers \local_faultreporting
-     */
-    public function test_get_faultreports(): void {
-        global $DB;
-
-        $this->resetAfterTest(true);
-
-        faultreport::save_report(2, 'title1', 'description1', 'payload1');
-        faultreport::save_report(2, 'title2', 'description2', 'payload2');
-        faultreport::save_report(2, 'title3', 'description3', 'payload3');
-
-        $faultreports = faultreport::get_reports();
-
-        $this->assertEquals(3, count($faultreports));
     }
 }
