@@ -16,24 +16,119 @@
 
 namespace local_faultreporting\privacy;
 
-use core_privacy\local\metadata\null_provider;
+use core_privacy\local\request\userlist;
+use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\approved_userlist;
+use core_privacy\local\request\deletion_criteria;
+use core_privacy\local\request\writer;
+use core_privacy\local\request\helper as request_helper;
+use core_privacy\local\metadata\collection;
+use core_privacy\local\request\transform;
+use tool_dataprivacy\context_instance;
+use core_privacy\local\request\contextlist;
 
 /**
- * Privacy Subsystem for local_faultreporting implementing null_provider.
+ * Privacy Subsystem for local_faultreporting.
  *
  * @package    local_faultreporting
  * @copyright  2025 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements null_provider {
+class provider implements
+    // This plugin has data.
+    \core_privacy\local\metadata\provider
+    /*
+    ,
+
+    // This plugin currently implements the original plugin\provider interface.
+    \core_privacy\local\request\plugin\provider,
+
+    // This plugin is capable of determining which users have data within it.
+    \core_privacy\local\request\core_userlist_provider
+    */ {
 
     /**
-     * Get the language string identifier with the component's language
-     * file to explain why this plugin stores no data.
+     * Return the fields which contain personal data.
      *
-     * @return  string
+     * @param collection $items a reference to the collection to use to store the metadata.
+     * @return collection the updated collection of metadata items.
      */
-    public static function get_reason(): string {
-        return 'privacy:metadata';
+    public static function get_metadata(collection $collection): collection {
+        // The 'local_faultreport' table stores information about individual fault reports.
+        $collection->add_database_table(
+            'local_faultreport',
+            [
+                'userid' => 'privacy:metadata:local_faultreporting:userid',
+                'description' => 'privacy:metadata:local_faultreporting:description',
+            ],
+            'privacy:metadata:local_faultreporting'
+        );
+
+        // Data in the 'local_faultreport' table is exported to an external location i.e., Assyst.
+        $collection->add_external_location_link(
+            'assystapi',
+            [
+                'userid' => 'privacy:metadata:local_faultreporting:userid',
+                'description' => 'privacy:metadata:local_faultreporting:description',
+            ],
+            'privacy:metadata:local_faultreporting'
+        );
+
+        return $collection;
+    }
+
+    /**
+     * Get the list of users who have data within a context.
+     *
+     * @param   userlist    $userlist   The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        $context = $userlist->get_context();
+
+        if (!is_a($context, \context_system::class)) {
+            return;
+        }
+
+        // Get the list of users who have data in this context.
+
+        $reports = \local_faultreporting\faultreport::get_reports();
+        foreach ($reports as $report) {
+            // Note that the add_user function convieniently handles duplicates.
+            $userlist->add_user($report->userid);
+        }
+    }
+
+    /**
+     * Get the list of contexts that contain user information for the specified user.
+     *
+     * @param   int           $userid       The user to search.
+     * @return  contextlist   $contextlist  The list of contexts used in this plugin.
+     */
+    public static function get_contexts_for_userid(int $userid): contextlist {
+        $contextlist = new contextlist();
+        $reports = \local_faultreporting\faultreport::get_reports_by_user($userid);
+
+        if (count($reports)) {
+            $contextlist->add_system_context();
+        }
+
+        return $contextlist;
+    }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param   approved_userlist       $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+        global $DB;
+
+        [$userinsql, $userinparams] = $DB->get_in_or_equal($userlist->get_userids(), SQL_PARAMS_NAMED);
+
+        $DB->delete_records_select(
+            'local_faultreporting',
+            "userid $userinsql",
+            $userinparams
+        );
     }
 }

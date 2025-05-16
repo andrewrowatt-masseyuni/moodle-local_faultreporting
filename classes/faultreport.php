@@ -391,7 +391,7 @@ class faultreport {
      * Deletes all reports for a given user
      *
      * Implemented for privacy provider
-     * 
+     *
      * @param int $userid
      */
     public static function delete_user_reports(int $userid): void {
