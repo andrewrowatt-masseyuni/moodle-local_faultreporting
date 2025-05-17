@@ -36,13 +36,11 @@ use core_privacy\local\request\contextlist;
  */
 class provider implements
     // This plugin has data.
-    \core_privacy\local\metadata\provider
-    /*
-    ,
+    \core_privacy\local\metadata\provider,
 
     // This plugin currently implements the original plugin\provider interface.
-    \core_privacy\local\request\plugin\provider,
-
+    \core_privacy\local\request\plugin\provider
+/*
     // This plugin is capable of determining which users have data within it.
     \core_privacy\local\request\core_userlist_provider
     */ {
@@ -50,7 +48,7 @@ class provider implements
     /**
      * Return the fields which contain personal data.
      *
-     * @param collection $items a reference to the collection to use to store the metadata.
+     * @param collection $collection a reference to the collection to use to store the metadata.
      * @return collection the updated collection of metadata items.
      */
     public static function get_metadata(collection $collection): collection {
@@ -130,5 +128,36 @@ class provider implements
             "userid $userinsql",
             $userinparams
         );
+    }
+
+    /**
+     * Implements delete_data_for_all_users_in_context
+     * @param \context $context
+     * @return void
+     */
+    public static function delete_data_for_all_users_in_context(\context $context) {
+        global $DB;
+
+        if (!is_a($context, \context_system::class)) {
+            return;
+        }
+
+        $DB->delete_records('local_faultreporting');
+    }
+
+    /**
+     * Implements delete_data_for_user
+     * @param \core_privacy\local\request\approved_contextlist $contextlist
+     * @return void
+     */
+    public static function delete_data_for_user(approved_contextlist $contextlist) {
+    }
+
+    /**
+     * Implements export_user_data
+     * @param \core_privacy\local\request\approved_contextlist $contextlist
+     * @return void
+     */
+    public static function export_user_data(approved_contextlist $contextlist) {
     }
 }

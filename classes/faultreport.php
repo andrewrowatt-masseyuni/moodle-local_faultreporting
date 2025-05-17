@@ -27,6 +27,7 @@ use stdClass;
  */
 class faultreport {
 
+
     /**
      * Report is new and unsent
      */
@@ -67,8 +68,11 @@ class faultreport {
      * @return bool|string
      */
     public static function build_assyst_json_payload(
-            string $reportedby, string $affecteduser,
-            string $summary, string $description): string {
+        string $reportedby,
+        string $affecteduser,
+        string $summary,
+        string $description
+    ): string {
         $reportedbyshortcode = strtoupper($reportedby);
         $affectedusershortcode = strtoupper($affecteduser);
 
@@ -79,52 +83,68 @@ class faultreport {
             'shortDescription' => $summary,
             'remarks' => $description,
             'affectedUser' => [
-                'resolvingParameters' => [[
-                    'parameterName' => 'shortCode',
-                    'parameterValue' => $affectedusershortcode,
-                ]],
+                'resolvingParameters' => [
+                    [
+                        'parameterName' => 'shortCode',
+                        'parameterValue' => $affectedusershortcode,
+                    ],
+                ],
             ],
             'reportingUser' => [
-                'resolvingParameters' => [[
-                    'parameterName' => 'shortCode',
-                    'parameterValue' => $reportedbyshortcode,
-                ]],
+                'resolvingParameters' => [
+                    [
+                        'parameterName' => 'shortCode',
+                        'parameterValue' => $reportedbyshortcode,
+                    ],
+                ],
             ],
             'itemA' => [
-                'resolvingParameters' => [[
-                    'parameterName' => 'shortCode',
-                    'parameterValue' => 'OTHER',
-                ]],
+                'resolvingParameters' => [
+                    [
+                        'parameterName' => 'shortCode',
+                        'parameterValue' => 'OTHER',
+                    ],
+                ],
             ],
             'itemB' => [
-                'resolvingParameters' => [[
-                    'parameterName' => 'shortCode',
-                    'parameterValue' => 'OTHER',
-                ]],
+                'resolvingParameters' => [
+                    [
+                        'parameterName' => 'shortCode',
+                        'parameterValue' => 'OTHER',
+                    ],
+                ],
             ],
             'category' => [
-                'resolvingParameters' => [[
-                    'parameterName' => 'shortCode',
-                    'parameterValue' => 'DEFECT',
-                ]],
+                'resolvingParameters' => [
+                    [
+                        'parameterName' => 'shortCode',
+                        'parameterValue' => 'DEFECT',
+                    ],
+                ],
             ],
             'assignedServDept' => [
-                'resolvingParameters' => [[
-                    'parameterName' => 'shortCode',
-                    'parameterValue' => 'STREAM SERVICE DESK',
-                ]],
+                'resolvingParameters' => [
+                    [
+                        'parameterName' => 'shortCode',
+                        'parameterValue' => 'STREAM SERVICE DESK',
+                    ],
+                ],
             ],
             'impact' => [
-                'resolvingParameters' => [[
-                    'parameterName' => 'shortCode',
-                    'parameterValue' => 'INDIVIDUAL',
-                ]],
+                'resolvingParameters' => [
+                    [
+                        'parameterName' => 'shortCode',
+                        'parameterValue' => 'INDIVIDUAL',
+                    ],
+                ],
             ],
             'priority' => [
-                'resolvingParameters' => [[
-                    'parameterName' => 'shortCode',
-                    'parameterValue' => '3-WORK NOT AFFECTED',
-                ]],
+                'resolvingParameters' => [
+                    [
+                        'parameterName' => 'shortCode',
+                        'parameterValue' => '3-WORK NOT AFFECTED',
+                    ],
+                ],
             ],
         ];
 
@@ -145,9 +165,12 @@ class faultreport {
      * @return array transaction status, externalid or error message
      */
     public static function send_report_to_assyst(
-            string $reportedby, string $affecteduser,
-            string $summary, string $description,
-            bool $useaffecteduserfallback = false): array {
+        string $reportedby,
+        string $affecteduser,
+        string $summary,
+        string $description,
+        bool $useaffecteduserfallback = false
+    ): array {
         global $DB;
 
         $endpoint = get_config('local_faultreporting', 'assystapiurl');
@@ -186,7 +209,7 @@ class faultreport {
         $responseraw = curl_exec($ch);
         $response = json_decode($responseraw);
 
-        $httpcode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlerrorcode = curl_error($ch);
         curl_close($ch);
 
@@ -198,35 +221,47 @@ class faultreport {
                     return [self::TRANSACTION_SUCCESS, $eventref];
                 case 400: /* Bad request */
                     // ... in some cases we can recover from a 400 error
-                    switch($response->type) {
+                    switch ($response->type) {
                         case 'ComplexValidationException':
                             if ($useaffecteduserfallback) {
-                                return [self::TRANSACTION_FAILURE,
+                                return [
+                                    self::TRANSACTION_FAILURE,
                                     "HTTP Error 400: Bad request. Assyst API response:
-                                    type: $response->type, message: $response->message. useaffecteduserfallback is true."];
+                                    type: $response->type, message: $response->message. useaffecteduserfallback is true.",
+                                ];
                             } else {
-                                return [self::TRANSACTION_RETRY_WITH_DEFAULT,
+                                return [
+                                    self::TRANSACTION_RETRY_WITH_DEFAULT,
                                     "HTTP Error 400: Bad request. Assyst API response:
-                                    type: $response->type, message: $response->message"];
+                                    type: $response->type, message: $response->message",
+                                ];
                             }
                         default:
-                            return [self::TRANSACTION_FAILURE,
+                            return [
+                                self::TRANSACTION_FAILURE,
                                 "HTTP Error 400: Bad request. Assyst API response:
-                                type: $response->type, message: $response->message"];
+                                type: $response->type, message: $response->message",
+                            ];
                     }
                 default:
-                    return [self::TRANSACTION_FAILURE,
-                        "HTTP Error $httpcode. Report not sent. curl error: $curlerrorcode."];
+                    return [
+                        self::TRANSACTION_FAILURE,
+                        "HTTP Error $httpcode. Report not sent. curl error: $curlerrorcode.",
+                    ];
             }
         } else {
             // ... no JSON response from Assyst, but we can perform some basic checks
             switch ($httpcode) {
                 case 401: /* Unauthorized */
-                    return [self::TRANSACTION_FAILURE,
-                        "HTTP Error 401: Unauthorized. Check Assyst API Username and Password."];
+                    return [
+                        self::TRANSACTION_FAILURE,
+                        "HTTP Error 401: Unauthorized. Check Assyst API Username and Password.",
+                    ];
                 default:
-                    return [self::TRANSACTION_FAILURE,
-                        "HTTP Error $httpcode. Report not sent. curl error: $curlerrorcode."];
+                    return [
+                        self::TRANSACTION_FAILURE,
+                        "HTTP Error $httpcode. Report not sent. curl error: $curlerrorcode.",
+                    ];
             }
         }
     }
@@ -278,8 +313,11 @@ class faultreport {
         $user = \core_user::get_user($report->userid);
 
         [$transactionstatus, $externalidorerrormsg] = self::send_report_to_assyst(
-            $user->username, $user->username,
-            $report->summary, $report->payload);
+            $user->username,
+            $user->username,
+            $report->summary,
+            $report->payload
+        );
 
         switch ($transactionstatus) {
             case self::TRANSACTION_SUCCESS:
@@ -331,8 +369,10 @@ class faultreport {
     }
 
     /**
-     * Returns all reports from the database
+     * Returns all reports from the database with an optional where clause filter
      *
+     * @param string $whereclause SQL where clause include the WHERE keyword
+     * @param array $params Statement parameter array
      * @return array
      */
     private static function get_reports_with_optional_filter(string $whereclause = '', array $params = []): array {
@@ -361,6 +401,7 @@ class faultreport {
     /**
      * Returns all reports from the database for a given user
      *
+     * @param int $userid
      * @return array
      */
     public static function get_reports_by_user(int $userid): array {
@@ -371,8 +412,9 @@ class faultreport {
     }
 
     /**
-     * Returns all reports from the database for a given user
+     * Returns all reports from the database for a report id
      *
+     * @param int $id
      * @return array
      */
     public static function get_report_by_id(int $id): object {
@@ -394,10 +436,21 @@ class faultreport {
      *
      * @param int $userid
      */
-    public static function delete_user_reports(int $userid): void {
+    public static function delete_reports_by_user(int $userid): void {
         global $DB;
 
         $DB->delete_records('local_faultreporting', ['userid' => $userid]);
+    }
+
+    /**
+     * Deletes all reports
+     *
+     * Implemented for privacy provider
+     */
+    public static function delete_all_reports(): void {
+        global $DB;
+
+        $DB->delete_records('local_faultreporting');
     }
 
     /**
@@ -409,17 +462,23 @@ class faultreport {
     public static function get_status_description($status): array {
         switch ($status) {
             case self::STATUS_NEW:
-                return ['New',
+                return [
+                    'New',
                     get_string('statusnew', 'local_faultreporting'),
-                    'warning'];
+                    'warning',
+                ];
             case self::STATUS_SENT:
-                return ['Ok',
+                return [
+                    'Ok',
                     get_string('statussent', 'local_faultreporting'),
-                    'success'];
+                    'success',
+                ];
             case self::STATUS_SEND_FAILURE:
-                return ['Error',
+                return [
+                    'Error',
                     get_string('statussendfailure', 'local_faultreporting'),
-                    'danger'];
+                    'danger',
+                ];
             default:
                 throw new \moodle_exception("Unknown status code: $status");
         }
@@ -437,6 +496,4 @@ class faultreport {
         $url = get_config('local_faultreporting', 'assysteventsearchurl');
         return str_replace('$externalid', $externalid, $url);
     }
-
-
 }

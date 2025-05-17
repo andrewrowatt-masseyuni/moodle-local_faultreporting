@@ -76,4 +76,27 @@ final class lib_test extends \advanced_testcase {
         $this->assertEquals($this->user1->id, $faultreport->userid);
         $this->assertEquals(faultreport::STATUS_NEW, $faultreport->status);
     }
+
+    /**
+     * Test deleting fault reports for individual users and all users
+     * @return void
+     *
+     * @covers \local_faultreporting
+     */
+    public function test_delete_faultreports(): void {
+        $reports = faultreport::get_reports();
+        $this->assertEquals(3, count($reports));
+
+        faultreport::delete_reports_by_user($this->user2->id);
+        $reports = faultreport::get_reports();
+        $this->assertEquals(2, count($reports));
+
+        faultreport::delete_reports_by_user($this->user3->id);
+        $reports = faultreport::get_reports();
+        $this->assertEquals(2, count($reports));
+
+        faultreport::delete_all_reports();
+        $reports = faultreport::get_reports();
+        $this->assertEquals(0, count($reports));
+    }
 }
