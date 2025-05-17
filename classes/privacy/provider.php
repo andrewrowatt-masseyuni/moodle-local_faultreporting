@@ -39,11 +39,10 @@ class provider implements
     \core_privacy\local\metadata\provider,
 
     // This plugin currently implements the original plugin\provider interface.
-    \core_privacy\local\request\plugin\provider
-/*
+    \core_privacy\local\request\plugin\provider,
+
     // This plugin is capable of determining which users have data within it.
-    \core_privacy\local\request\core_userlist_provider
-    */ {
+    \core_privacy\local\request\core_userlist_provider {
 
     /**
      * Return the fields which contain personal data.
@@ -54,7 +53,7 @@ class provider implements
     public static function get_metadata(collection $collection): collection {
         // The 'local_faultreport' table stores information about individual fault reports.
         $collection->add_database_table(
-            'local_faultreport',
+            'local_faultreporting',
             [
                 'userid' => 'privacy:metadata:local_faultreporting:userid',
                 'description' => 'privacy:metadata:local_faultreporting:description',
@@ -119,15 +118,15 @@ class provider implements
      * @param   approved_userlist       $userlist The approved context and user information to delete information for.
      */
     public static function delete_data_for_users(approved_userlist $userlist) {
-        global $DB;
+        $context = $userlist->get_context();
 
-        [$userinsql, $userinparams] = $DB->get_in_or_equal($userlist->get_userids(), SQL_PARAMS_NAMED);
+        if (!is_a($context, \context_system::class)) {
+            return;
+        }
 
-        $DB->delete_records_select(
-            'local_faultreporting',
-            "userid $userinsql",
-            $userinparams
-        );
+        foreach ($userlist->get_userids() as $userid) {
+            \local_faultreporting\faultreport::delete_reports_by_user($userid);
+        }
     }
 
     /**
@@ -136,13 +135,11 @@ class provider implements
      * @return void
      */
     public static function delete_data_for_all_users_in_context(\context $context) {
-        global $DB;
-
         if (!is_a($context, \context_system::class)) {
             return;
         }
 
-        $DB->delete_records('local_faultreporting');
+        \local_faultreporting\faultreport::delete_all_reports();
     }
 
     /**
@@ -151,6 +148,12 @@ class provider implements
      * @return void
      */
     public static function delete_data_for_user(approved_contextlist $contextlist) {
+        if (empty($contextlist->count())) {
+            return;
+        }
+
+        $userid = $contextlist->get_user()->id;
+        \local_faultreporting\faultreport::delete_reports_by_user($userid);
     }
 
     /**
