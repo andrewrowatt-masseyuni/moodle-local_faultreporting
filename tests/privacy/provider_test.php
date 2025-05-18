@@ -140,4 +140,21 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
         $reports = faultreport::get_reports();
         $this->assertCount(1, $reports);
     }
+
+    /**
+     * Test for provider::delete_data_for_user
+     *
+     * @covers \local_faultreporting\privacy
+     */
+    public function test_delete_data_for_user() {
+        $reports = faultreport::get_reports();
+        $this->assertCount(3, $reports);
+
+        $contextlist = new \core_privacy\local\request\approved_contextlist(
+            $this->user1, 'local_faultreporting', [\context_system::instance()->id]);
+        privacy\provider::delete_data_for_user($contextlist);
+
+        $reports = faultreport::get_reports();
+        $this->assertCount(1, $reports);
+    }
 }

@@ -162,5 +162,30 @@ class provider implements
      * @return void
      */
     public static function export_user_data(approved_contextlist $contextlist) {
+        $context = \context_system::instance();
+
+        $userid = $contextlist->get_user()->id;
+        $reports = \local_faultreporting\faultreport::get_reports_by_user($userid);
+
+        if (count($reports) == 0) {
+            return;
+        }
+
+        $reportsdata = [];
+
+        $datalabel = get_string('faultreport', 'local_faultreporting');
+
+        foreach ($reports as $report) {
+            $reportdata = [$datalabel => $report->payload];
+            $reportsdata[] = (object)$reportdata;
+        }
+
+        $context = \context_system::instance();
+
+        // Add the data to the context.
+        writer::with_context($context)->export_data(
+            [get_string('faultreports', 'local_faultreporting')],
+            (object)[get_string('faultreports', 'local_faultreporting') => $reportsdata]
+        );
     }
 }
