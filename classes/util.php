@@ -48,7 +48,12 @@ class util {
         return preg_match('/^\d{8}$/', $USER->username) == 1;
     }
 
-        public static function is_st_account(): bool {
+    /**
+     * Returns true if username is "st" account format
+     *
+     * @return bool
+     */
+    public static function is_st_account(): bool {
         global $USER;
 
         return preg_match('/^st\d{6}$/', $USER->username) == 1;
