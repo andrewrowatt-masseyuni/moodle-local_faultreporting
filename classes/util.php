@@ -48,6 +48,12 @@ class util {
         return preg_match('/^\d{8}$/', $USER->username) == 1;
     }
 
+        public static function is_st_account(): bool {
+        global $USER;
+
+        return preg_match('/^st\d{6}$/', $USER->username) == 1;
+    }
+
     /**
      * Gets phone number from user profile field with fallback to built-in phone fields
      *

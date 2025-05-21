@@ -45,13 +45,13 @@ final class lib_test extends \advanced_testcase {
         $this->resetAfterTest();
         $this->setAdminUser();
 
-        $user1 = $this->getDataGenerator()->create_user();
+        $user1 = $this->getDataGenerator()->create_user(['username' => 'fsurnam1']);
         $this->user1 = $user1;
 
-        $user2 = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user(['username' => '12345678']);
         $this->user2 = $user2;
 
-        $user3 = $this->getDataGenerator()->create_user();
+        $user3 = $this->getDataGenerator()->create_user(['username' => 'st123456']);
         $this->user3 = $user3;
 
         faultreport::save_report($user1->id, 'title1', 'description1', 'payload1');
@@ -98,5 +98,25 @@ final class lib_test extends \advanced_testcase {
         faultreport::delete_all_reports();
         $reports = faultreport::get_reports();
         $this->assertEquals(0, count($reports));
+    }
+
+    /**
+     * Test static utility functions
+     * @return void
+     *
+     * @covers \local_faultreporting
+     */
+    public function test_util(): void {
+        $this->setUser($this->user1);
+        $this->assertFalse(util::is_student());
+        $this->assertFalse(util::is_st_account());
+
+        $this->setUser($this->user2);
+        $this->assertTrue(util::is_student());
+        $this->assertFalse(util::is_st_account());
+
+        $this->setUser($this->user3);
+        $this->assertTrue(util::is_st_account());
+        $this->assertFalse(util::is_student());
     }
 }

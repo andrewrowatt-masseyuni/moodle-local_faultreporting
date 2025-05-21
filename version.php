@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component    = 'local_faultreporting';
-$plugin->release      = '1.0.4';
-$plugin->version      = 2025011104;
+$plugin->release      = '1.0.5';
+$plugin->version      = 2025011105;
 $plugin->requires     = 2022111800;
 $plugin->supported    = [401, 405];
 $plugin->maturity     = MATURITY_STABLE;

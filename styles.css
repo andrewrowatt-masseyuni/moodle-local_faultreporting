@@ -1,0 +1,12 @@
+#page-local-faultreporting-faultreport {
+    .fr-description {
+        a {
+            font-weight: 400;
+            text-decoration: underline;
+        }
+
+        >:last-child {
+            margin-bottom: 0;
+        }
+    }
+}

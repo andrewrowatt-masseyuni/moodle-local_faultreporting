@@ -107,6 +107,16 @@ if ($form->is_cancelled()) {
 
 echo $OUTPUT->header();
 
+echo \html_writer::tag('div', markdown_to_html(get_string('descriptiongeneralmd', 'local_faultreporting')), ['class' => 'fr-description mb-3']);
+
+if (!util::is_student()) {
+    if (util::is_st_account()) {
+        echo \html_writer::tag('div', markdown_to_html(get_string('descriptionstaccountmd', 'local_faultreporting')), ['class' => 'alert alert-danger mb-0 fr-description mb-3 fr-description-staccount']);
+    } else {
+        echo \html_writer::tag('div', markdown_to_html(get_string('descriptionstaffmd', 'local_faultreporting')), ['class' => 'alert alert-info mb-0 fr-description mb-3 fr-description-staff']);
+    }
+}
+
 $form->display();
 
 echo $OUTPUT->footer();
