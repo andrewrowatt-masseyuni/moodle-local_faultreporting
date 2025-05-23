@@ -107,21 +107,16 @@ if ($form->is_cancelled()) {
 
 echo $OUTPUT->header();
 
-echo \html_writer::tag('div',
-    markdown_to_html(get_string('descriptiongeneralmd', 'local_faultreporting')),
-    ['class' => 'fr-description mb-3']);
+$data = [
+    'descriptiongeneral' => markdown_to_html(
+        trim(get_string('descriptiongeneralmd', 'local_faultreporting'))),
+    'descriptionstaccount' => util::is_st_account() ? markdown_to_html(
+        trim(get_string('descriptionstaccountmd', 'local_faultreporting'))) : '',
+    'descriptionstaff' => !util::is_student() && !util::is_st_account() ? markdown_to_html(
+        trim(get_string('descriptionstaffmd', 'local_faultreporting'))) : '',
+];
 
-if (!util::is_student()) {
-    if (util::is_st_account()) {
-        echo \html_writer::tag('div',
-            markdown_to_html(get_string('descriptionstaccountmd', 'local_faultreporting')),
-            ['class' => 'alert alert-danger mb-0 fr-description mb-3 fr-description-staccount']);
-    } else {
-        echo \html_writer::tag('div',
-            markdown_to_html(get_string('descriptionstaffmd', 'local_faultreporting')),
-            ['class' => 'alert alert-info mb-0 fr-description mb-3 fr-description-staff']);
-    }
-}
+echo $OUTPUT->render_from_template('local_faultreporting/faultreport_description', $data);
 
 $form->display();
 

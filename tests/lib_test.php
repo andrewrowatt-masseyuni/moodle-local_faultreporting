@@ -110,13 +110,16 @@ final class lib_test extends \advanced_testcase {
         $this->setUser($this->user1);
         $this->assertFalse(util::is_student());
         $this->assertFalse(util::is_st_account());
+        $this->assertTrue(util::is_staff());
 
         $this->setUser($this->user2);
         $this->assertTrue(util::is_student());
         $this->assertFalse(util::is_st_account());
+        $this->assertFalse(util::is_staff());
 
         $this->setUser($this->user3);
         $this->assertTrue(util::is_st_account());
         $this->assertFalse(util::is_student());
+        $this->assertFalse(util::is_staff());
     }
 }

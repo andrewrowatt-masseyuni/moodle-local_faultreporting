@@ -79,7 +79,7 @@ class faultreport extends \moodleform {
         // Arguably a bit of a hack to get the help text to display in my preferred place.
         $mform->addElement('html', html_writer::div(
             '<i class="icon fa fa-info-circle " aria-hidden="true"></i>' . get_string('description_help', 'local_faultreporting'),
-            'alert alert-info help_text', ['style' => 'margin-left: calc(25% + 7px );']));
+            'alert alert-info help-text'));
 
         $mform->addElement('header', 'diagnosticinformation', get_string('diagnosticinformation', 'local_faultreporting'));
         $mform->setExpanded('diagnosticinformation', false); // Collapse by default.

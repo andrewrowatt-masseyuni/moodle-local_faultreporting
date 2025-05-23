@@ -41,8 +41,12 @@ $string['defaultsummary'] = 'Log a Stream Request';
 $string['description'] = 'Description';
 $string['description_help'] = 'Include as much information as possible.';
 $string['descriptiongeneralmd'] = 'Something not working quite right with Stream? Use this form to log a support request. Remember to include as much information as possible.';
-$string['descriptionstaccountmd'] = '<i class="icon fa fa-info-circle"></i> Please ensure that your *Email address* is correct.';
-$string['descriptionstaffmd'] = '<i class="icon fa fa-info-circle"></i> While you can use this form, as a staff member you are encouraged to [log a **fault** directly in AskUs](https://massey.saas.axiossystems.com/assystnet/application.jsp#serviceOfferings/510) or [log a **support request** directly in AskUs](https://massey.saas.axiossystems.com/assystnet/application.jsp#serviceOfferings/386).';
+$string['descriptionstaccountmd'] = 'Please ensure that your *Email address* is correct.';
+$string['descriptionstaffmd'] = 'While you can use this form, as a staff member you are encouraged to:
+
+-   [log a **fault** directly in AskUs](https://massey.saas.axiossystems.com/assystnet/application.jsp#serviceOfferings/510), or
+
+-   [log a **support request** directly in AskUs](https://massey.saas.axiossystems.com/assystnet/application.jsp#serviceOfferings/386).';
 $string['diagnosticinformation'] = 'Diagnostic information for support personal';
 $string['externalid'] = 'Assyst ID';
 $string['faultreport'] = 'Fault report';

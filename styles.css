@@ -1,12 +1,31 @@
 #page-local-faultreporting-faultreport {
-    .fr-description {
+    .faultreport-description {
         a {
             font-weight: 400;
             text-decoration: underline;
         }
 
-        >:last-child {
+        p {
+            margin-bottom: 0.25em;
+        }
+
+        > :last-child {
             margin-bottom: 0;
+        }
+    }
+
+    &:not(.theme-snap) {
+        .help-text {
+            margin-left: calc(25% + 7px);
+        }
+    }
+
+    &.theme-snap {
+        .help-text {
+            /* Hide icon as it looks out of place with Snap alerts */
+            >i.icon {
+                display: none;
+            }
         }
     }
 }

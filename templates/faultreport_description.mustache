@@ -1,0 +1,30 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_faultreporting/faultreport_description
+
+    TODO describe template faultreport_description
+
+    Example context (json):
+    {
+    }
+}}
+<div class="local_faultreporting faultreport-description_container">
+<div class="faultreport-description faultreport-descriptiongeneral">{{{descriptiongeneral}}}</div>
+{{#descriptionstaccount}}<div class="alert alert-info faultreport-description faultreport-descriptionstaccount mt-3">{{{descriptionstaccount}}}</div>{{/descriptionstaccount}}
+{{#descriptionstaff}}<div class="alert alert-info faultreport-description faultreport-descriptionstaff mt-3">{{{descriptionstaff}}}</div>{{/descriptionstaff}}
+</div>

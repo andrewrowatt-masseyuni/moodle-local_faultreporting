@@ -60,6 +60,15 @@ class util {
     }
 
     /**
+     * Returns true if username is not a student or "st" account
+     *
+     * @return bool
+     */
+    public static function is_staff(): bool {
+        return !self::is_student() && !self::is_st_account();
+    }
+
+    /**
      * Gets phone number from user profile field with fallback to built-in phone fields
      *
      * @return string
