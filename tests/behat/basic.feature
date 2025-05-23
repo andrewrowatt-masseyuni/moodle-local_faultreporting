@@ -49,4 +49,3 @@ Feature: Basic tests for Fault Reporting
     And I follow "Fault reports"
     Then I should see "test98186700"
     Then I should see "testst100585"
-
