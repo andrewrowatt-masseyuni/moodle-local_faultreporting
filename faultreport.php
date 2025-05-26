@@ -78,7 +78,7 @@ if ($form->is_cancelled()) {
         "Description:\n$formdata->description\n\n" .
         "Diagnostic Info:\n$formdata->diagnosticinfo" .
         "Stream logs (on the day the fault was logged):\n" .
-            "https://stream.massey.ac.nz/report/log/index.php?" .
+            "$CFG->wwwroot/report/log/index.php?" .
             "chooselog=1&showusers=0&showcourses=0&id=1&user=$USER->id&date=$moodlelogdateepoch" .
             "&modid=&modaction=&origin=&edulevel=-1&logreader=logstore_standard";
 
