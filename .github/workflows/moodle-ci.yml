@@ -98,10 +98,10 @@ jobs:
 
       - name: PHPUnit tests
         if: ${{ !cancelled() }}
-        env: | 
+        run: moodle-plugin-ci phpunit --fail-on-warning
+        env:
           ASSYST_API_USERNAME: ${{ secrets.ASSYST_API_USERNAME }}
           ASSYST_API_PASSWORD: ${{ secrets.ASSYST_API_PASSWORD }}
-        run: moodle-plugin-ci phpunit --fail-on-warning
 
       - name: PHPUnit tests - Core privacy (AJR)
         if: ${{ !cancelled() }}
