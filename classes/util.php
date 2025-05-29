@@ -123,6 +123,11 @@ class util {
     public static function is_localhost(): bool {
         $localhost = ['127.0.0.1', '::1'];
 
+        if (!array_key_exists('REMOTE_ADDR', $_SERVER)) {
+            // May not mean localhost, but we can't check.
+            return false;
+        }
+
         return in_array($_SERVER['REMOTE_ADDR'], $localhost);
     }
 }
