@@ -102,6 +102,7 @@ jobs:
         env:
           ASSYST_API_USERNAME: ${{ secrets.ASSYST_API_USERNAME }}
           ASSYST_API_PASSWORD: ${{ secrets.ASSYST_API_PASSWORD }}
+          PHPUNIT_ENVIRONMENT: ${{ secrets.PHPUNIT_ENVIRONMENT }}
 
       - name: PHPUnit tests - Core privacy (AJR)
         if: ${{ !cancelled() }}

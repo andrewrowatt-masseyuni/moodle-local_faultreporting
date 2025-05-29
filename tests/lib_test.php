@@ -129,6 +129,7 @@ final class lib_test extends \advanced_testcase {
      * @covers \local_faultreporting
      */
     public function test_send_report(): void {
+        // These should be set in github ref https://github.com/andrewrowatt-masseyuni/moodle-local_faultreporting/settings/secrets/actions.
         $username = getenv("ASSYST_API_USERNAME");
         $password = getenv("ASSYST_API_PASSWORD");
         ($environment = getenv("PHPUNIT_ENVIRONMENT")) || ($environment = 'localhost');
