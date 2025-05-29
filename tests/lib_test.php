@@ -131,6 +131,7 @@ final class lib_test extends \advanced_testcase {
     public function test_send_report(): void {
         $username = getenv("ASSYST_API_USERNAME");
         $password = getenv("ASSYST_API_PASSWORD");
+        ($environment = getenv("PHPUNIT_ENVIRONMENT")) || ($environment = 'localhost');
 
         set_config('assystapiurl', 'https://massey-dev.saas.axiossystems.com/assystREST/v2/events', 'local_faultreporting');
         set_config('assystapiusername', $username, 'local_faultreporting');
@@ -138,7 +139,7 @@ final class lib_test extends \advanced_testcase {
         set_config('assystaffecteduserfallback', 'ASSYSTSTUDENT', 'local_faultreporting');
 
         [$transactionstatus, $externalidorerrormsg] = faultreport::save_and_send_report(
-            $this->user1->id, 'unittest', 'unittest', 'unittest');
+            $this->user1->id, "unittest: env:$environment", 'unittest', 'unittest');
         $this->assertEquals(faultreport::TRANSACTION_SUCCESS, $transactionstatus, $externalidorerrormsg);
 
         // To verify: https://massey-dev.saas.axiossystems.com/assystnet/application.jsp#eventMonitor/10.
