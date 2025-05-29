@@ -195,6 +195,7 @@ class faultreport {
             'Content-Type: application/json',
             "Authorization: Basic $auth",
             'Accept: application/json',
+            'User-Agent: curl',
         ]);
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
@@ -256,6 +257,11 @@ class faultreport {
                     return [
                         self::TRANSACTION_FAILURE,
                         "HTTP Error 401: Unauthorized. Check Assyst API Username and Password.",
+                    ];
+                case 403: /* Forbidden */
+                    return [
+                        self::TRANSACTION_FAILURE,
+                        "HTTP Error 403: Forbidden. Headers (e.g., User-Agent) may be incorrect.",
                     ];
                 default:
                     return [
