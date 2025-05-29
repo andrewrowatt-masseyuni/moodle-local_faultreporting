@@ -43,15 +43,14 @@ final class lib_test extends \advanced_testcase {
      */
     protected function setUp(): void {
         $this->resetAfterTest();
-        $this->setAdminUser();
 
-        $user1 = $this->getDataGenerator()->create_user(['username' => 'fsurnam1']);
+        $user1 = $this->getDataGenerator()->create_user(['username' => 'arowatt']);
         $this->user1 = $user1;
 
-        $user2 = $this->getDataGenerator()->create_user(['username' => '12345678']);
+        $user2 = $this->getDataGenerator()->create_user(['username' => '98186700']);
         $this->user2 = $user2;
 
-        $user3 = $this->getDataGenerator()->create_user(['username' => 'st123456']);
+        $user3 = $this->getDataGenerator()->create_user(['username' => 'st100585']);
         $this->user3 = $user3;
 
         faultreport::save_report($user1->id, 'title1', 'description1', 'payload1');
