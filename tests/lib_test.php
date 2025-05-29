@@ -53,9 +53,9 @@ final class lib_test extends \advanced_testcase {
         $user3 = $this->getDataGenerator()->create_user(['username' => 'st100585']);
         $this->user3 = $user3;
 
-        faultreport::save_report($user1->id, 'title1', 'description1', 'payload1');
-        faultreport::save_report($user1->id, 'title2', 'description2', 'payload2');
-        faultreport::save_report($user2->id, 'title3', 'description3', 'payload3');
+        faultreport::save_report($user1->id, "title1: $user1->username", 'description1', 'payload1');
+        faultreport::save_report($user1->id, "title2: $user2->username", 'description2', 'payload2');
+        faultreport::save_report($user2->id, "title3: $user3->username", 'description3', 'payload3');
         // Note there are no fault reports for user3.
     }
 
@@ -120,5 +120,27 @@ final class lib_test extends \advanced_testcase {
         $this->assertTrue(util::is_st_account());
         $this->assertFalse(util::is_student());
         $this->assertFalse(util::is_staff());
+    }
+
+    /**
+     * Test sending a report to the external system
+     * @return void
+     *
+     * @covers \local_faultreporting
+     */
+    public function test_send_report(): void {
+        $username = getenv("ASSYST_API_USERNAME");
+        $password = getenv("ASSYST_API_PASSWORD");
+
+        set_config('assystapiurl', 'https://massey-dev.saas.axiossystems.com/assystREST/v2/events', 'local_faultreporting');
+        set_config('assystapiusername', $username, 'local_faultreporting');
+        set_config('assystapipassword', $password, 'local_faultreporting');
+        set_config('assystaffecteduserfallback', 'ASSYSTSTUDENT', 'local_faultreporting');
+
+        [$transactionstatus, $externalidorerrormsg] = faultreport::save_and_send_report(
+            $this->user1->id, 'unittest', 'unittest', 'unittest');
+        $this->assertEquals(faultreport::TRANSACTION_SUCCESS, $transactionstatus, $externalidorerrormsg);
+
+        // To verify: https://massey-dev.saas.axiossystems.com/assystnet/application.jsp#eventMonitor/10.
     }
 }

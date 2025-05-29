@@ -97,10 +97,10 @@ jobs:
         run: moodle-plugin-ci grunt --max-lint-warnings 0
 
       - name: PHPUnit tests
+        if: ${{ !cancelled() }}
         env: | 
           ASSYST_API_USERNAME: ${{ secrets.ASSYST_API_USERNAME }}
           ASSYST_API_PASSWORD: ${{ secrets.ASSYST_API_PASSWORD }}
-        if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpunit --fail-on-warning
 
       - name: PHPUnit tests - Core privacy (AJR)
