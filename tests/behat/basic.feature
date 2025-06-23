@@ -22,7 +22,7 @@ Feature: Basic tests for Fault Reporting
     And I set the following fields to these values:
       | Description | test98186700 |
     And I press "Submit report"
-    Then I should see "Well, this is embrassing"
+    Then I should see "Report successfully queued for sending"
 
     Given I am on the "local_faultreporting > faultreport" page logged in as "st100585"
     And I should see "Something not working quite right with Stream? Use this form to log a support request. Remember to include as much information as possible."
@@ -31,7 +31,7 @@ Feature: Basic tests for Fault Reporting
     And I set the following fields to these values:
       | Description | testst100585 |
     And I press "Submit report"
-    Then I should see "Well, this is embrassing"
+    Then I should see "Report successfully queued for sending"
 
     Given I log in as "admin"
     And I follow "Fault Reporting" in the user menu

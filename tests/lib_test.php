@@ -140,8 +140,12 @@ final class lib_test extends \advanced_testcase {
         set_config('assystapipassword', $password, 'local_faultreporting');
         set_config('assystaffecteduserfallback', 'ASSYSTSTUDENT', 'local_faultreporting');
 
-        [$transactionstatus, $externalidorerrormsg] = faultreport::save_and_send_report(
+        $reportid = faultreport::save_report(
             $this->user1->id, "unittest: env:$environment", 'unittest', 'unittest');
+
+        // Note this test does NOT an adhoc task, it calls the function directly.
+        [$transactionstatus, $externalidorerrormsg] = faultreport::send_report($reportid);
+
         $this->assertEquals(faultreport::TRANSACTION_SUCCESS, $transactionstatus, $externalidorerrormsg);
 
         // To verify: https://massey-dev.saas.axiossystems.com/assystnet/application.jsp#eventMonitor/10.

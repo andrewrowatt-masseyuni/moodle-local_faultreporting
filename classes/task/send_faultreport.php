@@ -14,19 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace local_faultreporting\task;
+
 /**
- * Version information for Fault Reporting
+ * Class send_faultreport
  *
  * @package    local_faultreporting
  * @copyright  2025 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->component    = 'local_faultreporting';
-$plugin->release      = '1.0.6';
-$plugin->version      = 2025011106;
-$plugin->requires     = 2022111800;
-$plugin->supported    = [401, 405];
-$plugin->maturity     = MATURITY_STABLE;
+class send_faultreport extends \core\task\adhoc_task {
+    /**
+     * Execute the task.
+     */
+    public function execute() {
+        $reportid = $this->get_custom_data()->reportid;
+        [$transactionstatus, $externalidorerrormsg] = \local_faultreporting\faultreport::send_report($reportid);
+        mtrace("Fault report $reportid sending status: $transactionstatus, external ID or error message: $externalidorerrormsg");
+    }
+}

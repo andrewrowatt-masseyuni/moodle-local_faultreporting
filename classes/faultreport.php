@@ -367,11 +367,28 @@ class faultreport {
      * @param string $summary
      * @param string $description
      * @param string $payload // Full description of the fault that is passed to Assyst.
-     * @return array transaction status, externalid or error message
      */
-    public static function save_and_send_report(int $userid, string $summary, string $description, string $payload): array {
+    public static function save_and_send_report(int $userid, string $summary, string $description, string $payload): void {
         $id = self::save_report($userid, $summary, $description, $payload);
-        return self::send_report($id);
+
+        self::queue_send_report($id);
+    }
+
+    /**
+     * Creates a task to send a report to Assyst
+     *
+     * This is used to send the report in the background
+     *
+     * @param int $id // The id of the report to send
+     */
+    public static function queue_send_report(int $id): void {
+        global $DB;
+
+        $DB->set_field('local_faultreporting', 'status', self::STATUS_NEW, ['id' => $id]);
+
+        $sendfaultreporttask = new \local_faultreporting\task\send_faultreport();
+        $sendfaultreporttask->set_custom_data(['reportid' => $id]);
+        \core\task\manager::queue_adhoc_task($sendfaultreporttask, true);
     }
 
     /**
@@ -469,7 +486,7 @@ class faultreport {
         switch ($status) {
             case self::STATUS_NEW:
                 return [
-                    'New',
+                    'Pending',
                     get_string('statusnew', 'local_faultreporting'),
                     'warning',
                 ];

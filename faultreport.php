@@ -82,19 +82,11 @@ if ($form->is_cancelled()) {
             "chooselog=1&showusers=0&showcourses=0&id=1&user=$USER->id&date=$moodlelogdateepoch" .
             "&modid=&modaction=&origin=&edulevel=-1&logreader=logstore_standard";
 
-    [$transactionstatus, $externalidorerrormsg] = faultreport::save_and_send_report(
+    faultreport::save_and_send_report(
         $USER->id, get_string('defaultsummary', 'local_faultreporting'), $formdata->description, $payload);
 
-    switch ($transactionstatus) {
-        case faultreport::TRANSACTION_SUCCESS:
-            $message = get_string('reportsuccessful', 'local_faultreporting', ['externalid' => $externalidorerrormsg]);
-            $messagetype = \core\output\notification::NOTIFY_SUCCESS;
-            break;
-        default:
-            $message = get_string('reporterror', 'local_faultreporting');
-            $messagetype = \core\output\notification::NOTIFY_ERROR;
-            break;
-    }
+    $message = get_string('reportqueued', 'local_faultreporting');
+        $messagetype = \core\output\notification::NOTIFY_INFO;
 
     if ($formdata->fromurl == '-') {
         $redirecturl = new moodle_url('/my/');
