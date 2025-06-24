@@ -58,6 +58,7 @@ $string['privacy:metadata:local_faultreporting:userid'] = 'The user who logged t
 $string['privacy:metadata:local_faultreporting:description'] = 'The description of the report, which may contain personal information.';
 $string['reportqueued'] = 'Report successfully queued for sending.';
 $string['resend'] = 'Resend report';
+$string['send_faultreport_task'] = 'Send fault report to Assyst';
 $string['statusnew'] = 'If this status persists then resend as it may indicate a problem with the Assyst API.';
 $string['statussendfailure'] = 'Error sending report to Assyst';
 $string['statussent'] = 'Report successfully sent to Assyst';

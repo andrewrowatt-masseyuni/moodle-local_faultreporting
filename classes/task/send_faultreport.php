@@ -25,6 +25,15 @@ namespace local_faultreporting\task;
  */
 class send_faultreport extends \core\task\adhoc_task {
     /**
+     * Get the name of the task.
+     *
+     * @return string The name of the task.
+     */
+    public function get_name(): string {
+        return get_string('send_faultreport_task', 'local_faultreporting');
+    }
+
+    /**
      * Execute the task.
      */
     public function execute() {
