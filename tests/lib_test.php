@@ -132,6 +132,11 @@ final class lib_test extends \advanced_testcase {
         // These should be set in github ref:
         // https://github.com/andrewrowatt-masseyuni/moodle-local_faultreporting/settings/secrets/actions.
         $username = getenv("ASSYST_API_USERNAME");
+
+        if (empty($username)) {
+            $this->markTestSkipped('ASSYST_API_USERNAME environment variable not set.');
+        }
+
         $password = getenv("ASSYST_API_PASSWORD");
         ($environment = getenv("PHPUNIT_ENVIRONMENT")) || ($environment = 'localhost');
 
