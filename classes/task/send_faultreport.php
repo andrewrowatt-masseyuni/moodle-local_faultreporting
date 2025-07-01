@@ -39,6 +39,11 @@ class send_faultreport extends \core\task\adhoc_task {
     public function execute() {
         $reportid = $this->get_custom_data()->reportid;
         [$transactionstatus, $externalidorerrormsg] = \local_faultreporting\faultreport::send_report($reportid);
-        mtrace("Fault report $reportid sending status: $transactionstatus, external ID or error message: $externalidorerrormsg");
+
+        if ($transactionstatus === \local_faultreporting\faultreport::TRANSACTION_FAILURE) {
+            throw new \moodle_exception(
+        "Fault report $reportid sending status: $transactionstatus, error message: $externalidorerrormsg."
+            );
+        }
     }
 }
