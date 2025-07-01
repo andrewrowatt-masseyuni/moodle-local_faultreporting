@@ -42,7 +42,7 @@ class send_faultreport extends \core\task\adhoc_task {
 
         if ($transactionstatus === \local_faultreporting\faultreport::TRANSACTION_FAILURE) {
             throw new \moodle_exception(
-        "Fault report $reportid sending status: $transactionstatus, error message: $externalidorerrormsg."
+                "Fault report $reportid sending status: $transactionstatus, error message: $externalidorerrormsg."
             );
         }
     }
