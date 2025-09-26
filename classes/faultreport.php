@@ -453,6 +453,16 @@ class faultreport {
     }
 
     /**
+     * Delete a specific report
+     *
+     */
+    public static function delete_report(int $reportid): void {
+        global $DB;
+
+        $DB->delete_records('local_faultreporting', ['id'=> $reportid]);
+    }
+
+    /**
      * Deletes all reports for a given user
      *
      * Implemented for privacy provider

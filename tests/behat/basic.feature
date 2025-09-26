@@ -41,3 +41,22 @@ Feature: Basic tests for Fault Reporting
     Given I am on the "local_faultreporting > faultreports" page logged in as "admin"
     Then I should see "test98186700"
     Then I should see "testst100585"
+
+  Scenario: As a admin I can delete a fault report
+    Given I am on the "local_faultreporting > faultreports" page logged in as "admin"
+    Then I should see "No fault reports"
+
+    Given I am on the "local_faultreporting > faultreport" page logged in as "admin"
+    Then I should see "Create new fault report"
+    And I should see "Something not working quite right with Stream? Use this form to log a support request. Remember to include as much information as possible."
+    And I set the following fields to these values:
+      | Description | testadmin |
+    And I press "Submit report"
+    Then I should see "Report successfully queued for sending"
+
+    Given I am on the "local_faultreporting > faultreports" page logged in as "admin"
+    Then I should see "There are currently 1 report(s)."
+
+    Given I press "Delete"
+    Then I should see "Report deleted."
+    And I should see "No fault reports"

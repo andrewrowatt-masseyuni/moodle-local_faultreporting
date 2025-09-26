@@ -52,6 +52,14 @@ if ($action && $reportid) {
 
             redirect($url, $message, null, $messagetype);
             break;
+        case 'delete':
+            faultreport::delete_report($reportid);
+
+            $message = get_string('reportdeleted', 'local_faultreporting');
+                $messagetype = \core\output\notification::NOTIFY_INFO;
+
+
+            redirect($url, $message, null, $messagetype);
     }
 }
 
@@ -98,6 +106,7 @@ foreach (faultreport::get_reports() as $reportobject) {
 
 $data = [
     'sesskey' => sesskey(),
+    'reportcount' => count($reports),
     'reports' => $reports,
 ];
 

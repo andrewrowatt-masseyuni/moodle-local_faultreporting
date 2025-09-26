@@ -26,6 +26,9 @@
 {{^reports}}
 <p>{{#str}} noreports, local_faultreporting {{/str}}</p>
 {{/reports}}
+{{#reportcount}}
+<p>{{#str}} reportcount, local_faultreporting, {{reportcount}} {{/str}}</p>
+{{/reportcount}}
 <ul class="list-group pb-3">
     {{#reports}}
     <li class="list-group-item">
