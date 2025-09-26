@@ -459,7 +459,7 @@ class faultreport {
     public static function delete_report(int $reportid): void {
         global $DB;
 
-        $DB->delete_records('local_faultreporting', ['id'=> $reportid]);
+        $DB->delete_records('local_faultreporting', ['id' => $reportid]);
     }
 
     /**
