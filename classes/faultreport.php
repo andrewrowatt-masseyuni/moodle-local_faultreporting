@@ -456,7 +456,7 @@ class faultreport {
      * Delete a specific report
      *
      * @param int $reportid
-     * 
+     *
      */
     public static function delete_report(int $reportid): void {
         global $DB;
