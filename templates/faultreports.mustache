@@ -17,10 +17,48 @@
 {{!
     @template local_faultreporting/faultreports
 
-    TODO describe template faultreports
+    Displays a list of fault reports with status, description, user information, and action buttons.
+    Shows a message when no reports exist.
 
     Example context (json):
     {
+        "sesskey": "abc123xyz",
+        "reportcount": 2,
+        "reports": [
+            {
+                "id": 1,
+                "userid": 2,
+                "user": "John Doe",
+                "username": "johndoe",
+                "description": "Unable to access course materials",
+                "timemodified": 1703001600,
+                "status": 1,
+                "statusshortcode": "Ok",
+                "statusdescription": "Report sent successfully",
+                "statusclass": "success",
+                "courseid": 1,
+                "hasexternalid": true,
+                "externalid": "EXT12345",
+                "assysteventsearchurl": "https://example.com/search?id=EXT12345",
+                "canresend": false
+            },
+            {
+                "id": 2,
+                "userid": 3,
+                "user": "Jane Smith",
+                "username": "janesmith",
+                "description": "Error submitting assignment",
+                "timemodified": 1703002600,
+                "status": 2,
+                "statusshortcode": "Error",
+                "statusdescription": "Failed to send report",
+                "statusclass": "danger",
+                "courseid": 1,
+                "haserrormessage": true,
+                "errormsg": "Connection timeout",
+                "canresend": true
+            }
+        ]
     }
 }}
 {{^reports}}
