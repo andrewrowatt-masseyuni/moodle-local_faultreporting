@@ -14,11 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_faultreporting;
-
-use moodle_url;
-use context_system;
-
 /**
  * TODO describe file faultreport
  *
@@ -26,6 +21,11 @@ use context_system;
  * @copyright  2025 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace local_faultreporting;
+
+use moodle_url;
+use context_system;
 
 require('../../config.php');
 
