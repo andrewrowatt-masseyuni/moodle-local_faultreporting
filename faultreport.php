@@ -55,8 +55,10 @@ $diagnosticinfo =
     "OS: $clientinfo[operatingsystem]\n" .
     "Useragent: $_SERVER[HTTP_USER_AGENT]\n\n";
 
-$form = new \local_faultreporting\form\faultreport(null,
-    ['diagnosticinfo' => $diagnosticinfo, 'fromurl' => $fromurl]);
+$form = new \local_faultreporting\form\faultreport(
+    null,
+    ['diagnosticinfo' => $diagnosticinfo, 'fromurl' => $fromurl]
+);
 
 if ($form->is_cancelled()) {
     // If there is a cancel element on the form, and it was pressed,
@@ -83,7 +85,11 @@ if ($form->is_cancelled()) {
             "&modid=&modaction=&origin=&edulevel=-1&logreader=logstore_standard";
 
     faultreport::save_and_send_report(
-        $USER->id, get_string('defaultsummary', 'local_faultreporting'), $formdata->description, $payload);
+        $USER->id,
+        get_string('defaultsummary', 'local_faultreporting'),
+        $formdata->description,
+        $payload
+    );
 
     $message = get_string('reportqueued', 'local_faultreporting');
         $messagetype = \core\output\notification::NOTIFY_INFO;
@@ -101,11 +107,14 @@ echo $OUTPUT->header();
 
 $data = [
     'descriptiongeneral' => markdown_to_html(
-        trim(get_string('descriptiongeneralmd', 'local_faultreporting'))),
+        trim(get_string('descriptiongeneralmd', 'local_faultreporting'))
+    ),
     'descriptionstaccount' => util::is_st_account() ? markdown_to_html(
-        trim(get_string('descriptionstaccountmd', 'local_faultreporting'))) : '',
+        trim(get_string('descriptionstaccountmd', 'local_faultreporting'))
+    ) : '',
     'descriptionstaff' => !util::is_student() && !util::is_st_account() ? markdown_to_html(
-        trim(get_string('descriptionstaffmd', 'local_faultreporting'))) : '',
+        trim(get_string('descriptionstaffmd', 'local_faultreporting'))
+    ) : '',
 ];
 
 echo $OUTPUT->render_from_template('local_faultreporting/faultreport_description', $data);

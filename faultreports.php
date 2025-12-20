@@ -75,7 +75,7 @@ foreach (faultreport::get_reports() as $reportobject) {
         'statusclass' => $cssclasshint,
     ];
 
-    switch($reportarray['status']){
+    switch ($reportarray['status']) {
         case faultreport::STATUS_NEW:
             $reportarray += [
                 'showstatusdescription' => true,

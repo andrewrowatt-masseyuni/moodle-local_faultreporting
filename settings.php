@@ -84,6 +84,5 @@ if ($hassiteconfig) {
         ));
 
         $ADMIN->add('faultreportingfolder', $settings);
-
     }
 }

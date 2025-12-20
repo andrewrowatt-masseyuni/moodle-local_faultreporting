@@ -38,6 +38,7 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
      * {@inheritdoc}
      */
     protected function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
         $this->setAdminUser();
 
@@ -61,7 +62,7 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
      *
      * @covers \local_faultreporting\privacy
      */
-    public function test_get_metadata() {
+    public function test_get_metadata(): void {
         $this->resetAfterTest();
         $this->setAdminUser();
 
@@ -78,7 +79,7 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
      *
      * @covers \local_faultreporting\privacy
      */
-    public function test_get_users_in_context() {
+    public function test_get_users_in_context(): void {
         $cmcontext = \context_system::instance();
 
         $userlist = new \core_privacy\local\request\userlist($cmcontext, 'local_faultreporting');
@@ -88,9 +89,9 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
         $this->assertEquals(
             [],
             array_diff(
-            [$this->user1->id, $this->user2->id],
-            $userlist->get_userids()
-        )
+                [$this->user1->id, $this->user2->id],
+                $userlist->get_userids()
+            )
         );
     }
 
@@ -99,7 +100,7 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
      *
      * @covers \local_faultreporting\privacy
      */
-    public function test_get_contexts_for_userid() {
+    public function test_get_contexts_for_userid(): void {
         $contextlist = privacy\provider::get_contexts_for_userid($this->user1->id);
         $this->assertCount(1, $contextlist);
 
@@ -112,7 +113,7 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
      *
      * @covers \local_faultreporting\privacy
      */
-    public function test_delete_data_for_all_users_in_context() {
+    public function test_delete_data_for_all_users_in_context(): void {
         $context = \context_system::instance();
 
         privacy\provider::delete_data_for_all_users_in_context($context);
@@ -127,14 +128,16 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
      *
      * @covers \local_faultreporting\privacy
      */
-    public function test_delete_data_for_users() {
+    public function test_delete_data_for_users(): void {
         $reports = faultreport::get_reports();
         $this->assertCount(3, $reports);
 
         $context = \context_system::instance();
         $approveduserlist = new \core_privacy\local\request\approved_userlist(
-            $context, 'local_faultreporting',
-            [$this->user1->id, $this->user3->id]);
+            $context,
+            'local_faultreporting',
+            [$this->user1->id, $this->user3->id]
+        );
         privacy\provider::delete_data_for_users($approveduserlist);
 
         $reports = faultreport::get_reports();
@@ -146,12 +149,15 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
      *
      * @covers \local_faultreporting\privacy
      */
-    public function test_delete_data_for_user() {
+    public function test_delete_data_for_user(): void {
         $reports = faultreport::get_reports();
         $this->assertCount(3, $reports);
 
         $contextlist = new \core_privacy\local\request\approved_contextlist(
-            $this->user1, 'local_faultreporting', [\context_system::instance()->id]);
+            $this->user1,
+            'local_faultreporting',
+            [\context_system::instance()->id]
+        );
         privacy\provider::delete_data_for_user($contextlist);
 
         $reports = faultreport::get_reports();

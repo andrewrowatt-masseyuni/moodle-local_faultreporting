@@ -16,8 +16,6 @@
 
 namespace local_faultreporting;
 
-use stdClass;
-
 /**
  * Class faultreport
  *
@@ -26,8 +24,6 @@ use stdClass;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class faultreport {
-
-
     /**
      * Report is new and unsent
      */

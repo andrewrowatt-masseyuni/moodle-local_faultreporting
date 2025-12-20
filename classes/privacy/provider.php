@@ -38,12 +38,11 @@ class provider implements
     // This plugin has data.
     \core_privacy\local\metadata\provider,
 
-    // This plugin currently implements the original plugin\provider interface.
-    \core_privacy\local\request\plugin\provider,
-
     // This plugin is capable of determining which users have data within it.
-    \core_privacy\local\request\core_userlist_provider {
+    \core_privacy\local\request\core_userlist_provider,
 
+    // This plugin currently implements the original plugin\provider interface.
+    \core_privacy\local\request\plugin\provider {
     /**
      * Return the fields which contain personal data.
      *

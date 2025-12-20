@@ -42,6 +42,7 @@ final class lib_test extends \advanced_testcase {
      * {@inheritdoc}
      */
     protected function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
 
         $user1 = $this->getDataGenerator()->create_user(['username' => 'arowatt']);
@@ -146,7 +147,11 @@ final class lib_test extends \advanced_testcase {
         set_config('assystaffecteduserfallback', 'ASSYSTSTUDENT', 'local_faultreporting');
 
         $reportid = faultreport::save_report(
-            $this->user1->id, "unittest: env:$environment", 'unittest', 'unittest');
+            $this->user1->id,
+            "unittest: env:$environment",
+            'unittest',
+            'unittest'
+        );
 
         // Note this test does NOT an adhoc task, it calls the function directly.
         [$transactionstatus, $externalidorerrormsg] = faultreport::send_report($reportid);

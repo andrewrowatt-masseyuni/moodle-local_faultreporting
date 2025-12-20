@@ -16,7 +16,6 @@
 
 namespace local_faultreporting\form;
 use local_faultreporting\util;
-
 use html_writer;
 
 defined('MOODLE_INTERNAL') || die();
@@ -46,9 +45,12 @@ class faultreport extends \moodleform {
 
         $mform->addElement('header', 'general', get_string('basicinformationgroup', 'local_faultreporting'));
 
-        $mform->addElement('text', 'username',
+        $mform->addElement(
+            'text',
+            'username',
             util::is_student() ? get_string('studentid', 'local_faultreporting') : get_string('username', 'local_faultreporting'),
-            ['size' => 8, 'disabled' => 'disabled']);
+            ['size' => 8, 'disabled' => 'disabled']
+        );
         $mform->setDefault('username', $USER->username);
         $mform->setType('username', PARAM_TEXT);
 
@@ -70,7 +72,8 @@ class faultreport extends \moodleform {
             'textarea',
             'description',
             get_string('description', 'local_faultreporting'),
-            'wrap="virtual" rows="5" cols="50"');
+            'wrap="virtual" rows="5" cols="50"'
+        );
         $mform->setDefault('description', '');
         $mform->setType('description', PARAM_TEXT);
         $mform->addRule('description', null, 'required', null, 'client');
@@ -79,7 +82,8 @@ class faultreport extends \moodleform {
         // Arguably a bit of a hack to get the help text to display in my preferred place.
         $mform->addElement('html', html_writer::div(
             '<i class="icon fa fa-info-circle " aria-hidden="true"></i>' . get_string('description_help', 'local_faultreporting'),
-            'alert alert-info help-text'));
+            'alert alert-info help-text'
+        ));
 
         $mform->addElement('header', 'diagnosticinformation', get_string('diagnosticinformation', 'local_faultreporting'));
         $mform->setExpanded('diagnosticinformation', false); // Collapse by default.
@@ -87,7 +91,8 @@ class faultreport extends \moodleform {
         $mform->addElement('html', html_writer::tag(
             'div',
             $this->_customdata['diagnosticinfo'],
-            ['style' => 'white-space: pre-wrap;']));
+            ['style' => 'white-space: pre-wrap;']
+        ));
 
         $mform->closeHeaderBefore('buttonar');
         // End of owner group.
