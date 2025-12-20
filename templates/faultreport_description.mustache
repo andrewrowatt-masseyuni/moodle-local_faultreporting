@@ -17,10 +17,14 @@
 {{!
     @template local_faultreporting/faultreport_description
 
-    TODO describe template faultreport_description
+    Displays description sections for creating a new fault report, including general instructions
+    and optional context-specific messages for student accounts and staff members.
 
     Example context (json):
     {
+        "descriptiongeneral": "<p>Please provide details about the issue you are experiencing.</p>",
+        "descriptionstaccount": "<p>As a student account holder, please include your student ID.</p>",
+        "descriptionstaff": "<p>Staff members should include their department information.</p>"
     }
 }}
 <div class="local_faultreporting faultreport-description_container">
