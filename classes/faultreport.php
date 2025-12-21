@@ -159,7 +159,6 @@ class faultreport {
      * @param  string $affecteduser
      * @param  string $summary
      * @param  string $description
-     * @param  bool $useaffecteduserfallback
      * @return array transaction status, externalid or error message
      */
     public static function send_report_to_assyst(
