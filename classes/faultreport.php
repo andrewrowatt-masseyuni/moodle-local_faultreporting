@@ -71,8 +71,8 @@ class faultreport {
         string $summary,
         string $description
     ): string {
-        $reportedbyshortcode = strtoupper($reportedby);
-        $affectedusershortcode = strtoupper($affecteduser);
+        $reportedbycode = strtoupper($reportedby);
+        $affectedusercode = strtoupper($affecteduser);
 
         $data = [
             'entityDefinitionId' => 319,
@@ -84,7 +84,7 @@ class faultreport {
                 'resolvingParameters' => [
                     [
                         'parameterName' => 'shortCode',
-                        'parameterValue' => $affectedusershortcode,
+                        'parameterValue' => $affectedusercode,
                     ],
                 ],
             ],
@@ -92,7 +92,7 @@ class faultreport {
                 'resolvingParameters' => [
                     [
                         'parameterName' => 'shortCode',
-                        'parameterValue' => $reportedbyshortcode,
+                        'parameterValue' => $reportedbycode,
                     ],
                 ],
             ],
@@ -166,18 +166,11 @@ class faultreport {
         string $reportedby,
         string $affecteduser,
         string $summary,
-        string $description,
-        bool $useaffecteduserfallback = false
+        string $description
     ): array {
         $endpoint = get_config('local_faultreporting', 'assystapiurl');
         $username = get_config('local_faultreporting', 'assystapiusername');
         $password = get_config('local_faultreporting', 'assystapipassword');
-        $affecteduserfallback = get_config('local_faultreporting', 'assystaffecteduserfallback');
-
-        // ... used in retry scenarios
-        if ($useaffecteduserfallback) {
-            $affecteduser = $affecteduserfallback;
-        }
 
         $auth = base64_encode("$username:$password");
 
@@ -208,11 +201,11 @@ class faultreport {
                     // ... in some cases we can recover from a 400 error
                     switch ($response->type) {
                         case 'ComplexValidationException':
-                            if ($useaffecteduserfallback) {
+                            if ($affecteduser == get_config('local_faultreporting', 'assystaffecteduserfallback')) {
                                 return [
                                     self::TRANSACTION_FAILURE,
                                     "HTTP Error 400: Bad request. Assyst API response:
-                                    type: $response->type, message: $response->message. useaffecteduserfallback is true.",
+                                    type: $response->type, message: $response->message. Using affecteduserfallback.",
                                 ];
                             } else {
                                 return [
@@ -316,8 +309,9 @@ class faultreport {
                 break;
             case self::TRANSACTION_RETRY_WITH_DEFAULT:
                 // ... perform a one-time retry forcing the default username
+                $affecteduser = get_config('local_faultreporting', 'assystaffecteduserfallback');
                 [$transactionstatus, $externalidorerrormsg] =
-                    self::send_report_to_assyst($user->username, $user->username, $report->summary, $report->payload, true);
+                    self::send_report_to_assyst($user->username, $affecteduser, $report->summary, $report->payload);
 
                 if ($transactionstatus == self::TRANSACTION_SUCCESS) {
                     $report->status = self::STATUS_SENT;
