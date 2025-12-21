@@ -51,7 +51,7 @@ final class lib_test extends \advanced_testcase {
         $user2 = $this->getDataGenerator()->create_user(['username' => '98186700']);
         $this->user2 = $user2;
 
-        $user3 = $this->getDataGenerator()->create_user(['username' => 'st100585']);
+        $user3 = $this->getDataGenerator()->create_user(['username' => 'st999999']);
         $this->user3 = $user3;
 
         faultreport::save_report($user1->id, "title1: $user1->username", 'description1', 'payload1');
@@ -159,5 +159,44 @@ final class lib_test extends \advanced_testcase {
         $this->assertEquals(faultreport::TRANSACTION_SUCCESS, $transactionstatus, $externalidorerrormsg);
 
         // To verify: https://massey-dev.saas.axiossystems.com/assystnet/application.jsp#eventMonitor/10.
+    }
+
+    /**
+     * Test sending a report to the external system
+     * @return void
+     *
+     * @covers \local_faultreporting
+     */
+    public function test_send_report_with_fallback(): void {
+        // These should be set in github ref:
+        // https://github.com/andrewrowatt-masseyuni/moodle-local_faultreporting/settings/secrets/actions.
+        $username = getenv("ASSYST_API_USERNAME");
+
+        if (empty($username)) {
+            $this->markTestSkipped('ASSYST_API_USERNAME environment variable not set.');
+        }
+
+        $password = getenv("ASSYST_API_PASSWORD");
+        ($environment = getenv("PHPUNIT_ENVIRONMENT")) || ($environment = 'localhost');
+
+        set_config('assystapiurl', 'https://massey-dev.saas.axiossystems.com/assystREST/v2/events', 'local_faultreporting');
+        set_config('assystapiusername', $username, 'local_faultreporting');
+        set_config('assystapipassword', $password, 'local_faultreporting');
+        set_config('assystaffecteduserfallback', 'ASSYSTSTUDENT', 'local_faultreporting');
+
+        $reportid = faultreport::save_report(
+            $this->user3->id,
+            "unittest: env:$environment with fallback",
+            'unittest',
+            'unittest'
+        );
+
+        // Note this test does NOT use an adhoc task, it calls the function directly.
+        [$transactionstatus, $externalidorerrormsg] = faultreport::send_report($reportid);
+
+        $this->assertEquals(faultreport::TRANSACTION_SUCCESS, $transactionstatus, $externalidorerrormsg);
+
+        // To verify: https://massey-dev.saas.axiossystems.com/assystweb/application.do#eventsearch%2FEventSearchDelegatingDispatchAction.do?dispatch=loadQuery&showInMonitor=true&context=select&queryProfileForm.queryProfileId=1591&queryProfileForm.columnProfileId=0
+        // Stream Service Desk.
     }
 }
