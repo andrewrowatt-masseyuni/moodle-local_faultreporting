@@ -84,8 +84,8 @@
             <small>{{#str}} date, core {{/str}}: {{#userdate}} {{timemodified}}, {{#str}} strftimedate, core_langconfig {{/str}} {{/userdate}}</small>
         </p>
         <div class="d-flex justify-content-end" style="gap: 1em;">
-            {{#canresend}}<a role="button" href="faultreports.php?sesskey={{sesskey}}&courseid={{courseid}}&action=resend&id={{id}}">{{#pix}} t/reload, core, {{#str}} resend, local_faultreporting {{/str}} {{/pix}}{{#str}} resend, local_faultreporting {{/str}}</a>{{/canresend}}
-            <a role="button" href="faultreports.php?sesskey={{sesskey}}&courseid={{courseid}}&action=delete&id={{id}}">{{#pix}} t/delete, core, {{#str}} delete, core {{/str}} {{/pix}}{{#str}} delete, core {{/str}}</a>
+            {{#canresend}}<a class="btn btn-secondary btn-sm" role="button" href="faultreports.php?sesskey={{sesskey}}&courseid={{courseid}}&action=resend&id={{id}}">{{#pix}} t/reload, core, {{#str}} resend, local_faultreporting {{/str}} {{/pix}}{{#str}} resend, local_faultreporting {{/str}}</a>{{/canresend}}
+            <a class="btn btn-secondary btn-sm" role="button" href="faultreports.php?sesskey={{sesskey}}&courseid={{courseid}}&action=delete&id={{id}}">{{#pix}} t/delete, core, {{#str}} delete, core {{/str}} {{/pix}}{{#str}} delete, core {{/str}}</a>
         </div>
     </li>
 {{/reports}}
