@@ -167,8 +167,6 @@ class faultreport {
         string $description,
         bool $useaffecteduserfallback = false
     ): array {
-        global $DB;
-
         $endpoint = get_config('local_faultreporting', 'assystapiurl');
         $username = get_config('local_faultreporting', 'assystapiusername');
         $password = get_config('local_faultreporting', 'assystapipassword');

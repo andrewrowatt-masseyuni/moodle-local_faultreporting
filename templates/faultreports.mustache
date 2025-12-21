@@ -73,10 +73,10 @@
         <div class="w-100">
             <h5 class="mb-1"><span style="font-weight: 500;" class="badge badge-{{statusclass}}">{{statusshortcode}}{{#haserrormessage}} - <i>{{errormsg}}</i>{{/haserrormessage}}</span>{{#showstatusdescription}} <span style="font-weight: 500;" class="badge badge-secondary"><i class="fa fa-info-circle"></i> {{statusdescription}}</span>{{/showstatusdescription}}{{#hasexternalid}} <small>{{#str}} externalid, local_faultreporting {{/str}}: <a target="_blank" href="{{assysteventsearchurl}}">{{externalid}}</a></small>{{/hasexternalid}}</h5>
         </div>
-        <hr />
+        <hr>
         <h6 class="text-uppercase">Description</h6>
         <p class="mb-1">{{description}}</p>
-        <hr />
+        <hr>
         <p class="mb-1">
             <small>{{#str}} user, core {{/str}}: <a target="_blank" href="{{globals.config.wwwroot}}/user/profile.php?id={{userid}}">{{user}} ({{username}})</a></small>
         </p>
