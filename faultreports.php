@@ -38,6 +38,8 @@ require_capability('report/log:view', $PAGE->context); // Need to confirm this i
 
 $action = optional_param('action', null, PARAM_TEXT);
 $reportid = optional_param('id', null, PARAM_INT);
+$page = optional_param('page', 0, PARAM_INT);
+$perpage = 10; // Number of reports per page.
 
 if ($action && $reportid) {
     require_sesskey();
@@ -63,9 +65,12 @@ if ($action && $reportid) {
     }
 }
 
+$totalreports = faultreport::count_reports();
+$offset = $page * $perpage;
+
 $reports = [];
 
-foreach (faultreport::get_reports() as $reportobject) {
+foreach (faultreport::get_reports($perpage, $offset) as $reportobject) {
     $reportarray = (array)$reportobject;
     [$shortcode, $description, $cssclasshint] = faultreport::get_status_description($reportarray['status']);
 
@@ -104,10 +109,51 @@ foreach (faultreport::get_reports() as $reportobject) {
 }
 
 
+// Calculate pagination information.
+$totalpages = ceil($totalreports / $perpage);
+$pagingdata = [];
+
+// Generate pagination links.
+if ($totalpages > 1) {
+    // Previous page link.
+    if ($page > 0) {
+        $pagingdata[] = [
+            'page' => $page - 1,
+            'label' => get_string('previous', 'moodle'),
+            'isactive' => false,
+            'isprevious' => true,
+        ];
+    }
+
+    // Individual page links.
+    for ($i = 0; $i < $totalpages; $i++) {
+        $pagingdata[] = [
+            'page' => $i,
+            'label' => $i + 1,
+            'isactive' => ($i === $page),
+            'isnumber' => true,
+        ];
+    }
+
+    // Next page link.
+    if ($page < $totalpages - 1) {
+        $pagingdata[] = [
+            'page' => $page + 1,
+            'label' => get_string('next', 'moodle'),
+            'isactive' => false,
+            'isnext' => true,
+        ];
+    }
+}
+
 $data = [
     'sesskey' => sesskey(),
-    'reportcount' => count($reports),
+    'reportcount' => $totalreports,
     'reports' => $reports,
+    'currentpage' => $page,
+    'totalpages' => $totalpages,
+    'haspagination' => ($totalpages > 1),
+    'pagination' => $pagingdata,
 ];
 
 echo $OUTPUT->header();

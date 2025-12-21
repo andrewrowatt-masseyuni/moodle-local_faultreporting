@@ -24,6 +24,10 @@
     {
         "sesskey": "abc123xyz",
         "reportcount": 2,
+        "currentpage": 0,
+        "totalpages": 1,
+        "haspagination": false,
+        "pagination": [],
         "reports": [
             {
                 "id": 1,
@@ -90,3 +94,26 @@
     </li>
 {{/reports}}
 </ul>
+{{#haspagination}}
+<nav aria-label="{{#str}}page, moodle{{/str}}" class="d-flex justify-content-center mt-3 mb-3">
+    <ul class="pagination">
+        {{#pagination}}
+            {{#isprevious}}
+            <li class="page-item">
+                <a class="page-link page-link-prev" href="faultreports.php?page={{page}}">{{label}}</a>
+            </li>
+            {{/isprevious}}
+            {{#isnumber}}
+            <li class="page-item {{#isactive}}active{{/isactive}}">
+                <a class="page-link" href="faultreports.php?page={{page}}">{{label}}</a>
+            </li>
+            {{/isnumber}}
+            {{#isnext}}
+            <li class="page-item">
+                <a class="page-link page-link-next" href="faultreports.php?page={{page}}">{{label}}</a>
+            </li>
+            {{/isnext}}
+        {{/pagination}}
+    </ul>
+</nav>
+{{/haspagination}}
