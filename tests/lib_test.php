@@ -153,7 +153,7 @@ final class lib_test extends \advanced_testcase {
             'unittest'
         );
 
-        // Note this test does NOT an adhoc task, it calls the function directly.
+        // Note this test does NOT use an adhoc task, it calls the function directly.
         [$transactionstatus, $externalidorerrormsg] = faultreport::send_report($reportid);
 
         $this->assertEquals(faultreport::TRANSACTION_SUCCESS, $transactionstatus, $externalidorerrormsg);

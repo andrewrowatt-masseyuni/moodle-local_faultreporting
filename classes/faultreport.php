@@ -16,6 +16,8 @@
 
 namespace local_faultreporting;
 
+use curl;
+
 /**
  * Class faultreport
  *
@@ -181,34 +183,22 @@ class faultreport {
 
         $payload = self::build_assyst_json_payload($reportedby, $affecteduser, $summary, $description);
 
-        $ch = curl_init($endpoint);
-
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        $ch = new curl();
+        $ch->setHeader([
             'Content-Type: application/json',
             "Authorization: Basic $auth",
             'Accept: application/json',
-            'User-Agent: curl',
         ]);
 
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-
-        if (util::is_localhost()) {
-            // ... if localhost, disable SSL verification
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        }
-
-        $responseraw = curl_exec($ch);
+        $responseraw = $ch->post($endpoint, $payload);
+        $info = $ch->get_info();
         $response = json_decode($responseraw);
 
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlerrorcode = curl_error($ch);
-        curl_close($ch);
+        $httpcode = $info['http_code'];
 
-        if ($responseraw) {
+        $curlerrorcode = $ch->get_errno();
+
+        if ($response) {
             // ... we have a JSON response from Assyst
             switch ($httpcode) {
                 case 201: /* created */
