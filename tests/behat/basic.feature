@@ -11,7 +11,7 @@ Feature: Basic tests for Fault Reporting
     | 98186700 | Andrew    | Barry    | student1@example.com |
     | st100585 | Andrew    | Steve    | st1@example.com      |
 
-  And I change the window size to "large"
+    And I change the window size to "large"
 
   Scenario: Admin "Fault reports" page is available
     Given I am on the "local_faultreporting > faultreports" page logged in as "admin"
@@ -144,7 +144,6 @@ Feature: Basic tests for Fault Reporting
     And I press "Submit report"
     Then I should see "Report successfully queued for sending"
 
-    
     Given I am on the "local_faultreporting > faultreport" page logged in as "98186700"
     Then I should see "Create new fault report"
     And I should see "Something not working quite right with Stream? Use this form to log a support request. Remember to include as much information as possible."
