@@ -16,6 +16,10 @@
 
 namespace local_faultreporting\task;
 
+// Required for curl use in the faultreport::send_report function.
+// phpcs:disable moodle.Files.MoodleInternal.MoodleInternalGlobalState
+require_once($CFG->libdir . '/filelib.php');
+
 /**
  * Class send_faultreport
  *
