@@ -11,9 +11,11 @@ Feature: Basic tests for Fault Reporting
     | 98186700 | Andrew    | Barry    | student1@example.com |
     | st100585 | Andrew    | Steve    | st1@example.com      |
 
+    And I change the window size to "large"
+
   Scenario: Admin "Fault reports" page is available
     Given I am on the "local_faultreporting > faultreports" page logged in as "admin"
-    Then I should see "No fault reports"
+    Then I should see "Nothing to display"
 
   Scenario: As a user I can submit a fault report
     Given I am on the "local_faultreporting > faultreport" page logged in as "98186700"
@@ -41,10 +43,11 @@ Feature: Basic tests for Fault Reporting
     Given I am on the "local_faultreporting > faultreports" page logged in as "admin"
     Then I should see "test98186700"
     Then I should see "testst100585"
+    Then "[data-table-total-rows=\"2\"]" "css_element" should exist
 
   Scenario: As a admin I can delete a fault report
     Given I am on the "local_faultreporting > faultreports" page logged in as "admin"
-    Then I should see "No fault reports"
+    Then I should see "Nothing to display"
 
     Given I am on the "local_faultreporting > faultreport" page logged in as "admin"
     Then I should see "Create new fault report"
@@ -55,8 +58,7 @@ Feature: Basic tests for Fault Reporting
     Then I should see "Report successfully queued for sending"
 
     Given I am on the "local_faultreporting > faultreports" page logged in as "admin"
-    Then I should see "There are currently 1 report(s)."
+    Then "[data-table-total-rows=\"1\"]" "css_element" should exist
 
-    Given I press "Delete"
-    Then I should see "Report deleted."
-    And I should see "No fault reports"
+    And I press "Delete" action in the "testadmin" report row
+    And I should see "Nothing to display"

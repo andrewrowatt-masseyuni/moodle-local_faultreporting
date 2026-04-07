@@ -373,9 +373,16 @@ class faultreport {
      *
      * @param string $whereclause SQL where clause include the WHERE keyword
      * @param array $params Statement parameter array
+     * @param int $limit Maximum number of records to return (0 = no limit)
+     * @param int $offset Number of records to skip
      * @return array
      */
-    private static function get_reports_with_optional_filter(string $whereclause = '', array $params = []): array {
+    private static function get_reports_with_optional_filter(
+        string $whereclause = '',
+        array $params = [],
+        int $limit = 0,
+        int $offset = 0
+    ): array {
         global $DB;
 
         $sql = "SELECT fr.*,
@@ -386,16 +393,29 @@ class faultreport {
             $whereclause
             order by case when fr.status = 1 then -1 else fr.status end desc, fr.timecreated desc, fr.id desc";
 
-        return $DB->get_records_sql($sql, $params);
+        return $DB->get_records_sql($sql, $params, $offset, $limit);
     }
 
     /**
      * Returns all reports from the database
      *
+     * @param int $limit Maximum number of records to return (0 = no limit)
+     * @param int $offset Number of records to skip
      * @return array
      */
-    public static function get_reports(): array {
-        return self::get_reports_with_optional_filter();
+    public static function get_reports(int $limit = 0, int $offset = 0): array {
+        return self::get_reports_with_optional_filter('', [], $limit, $offset);
+    }
+
+    /**
+     * Returns the total count of reports in the database
+     *
+     * @return int
+     */
+    public static function count_reports(): int {
+        global $DB;
+
+        return $DB->count_records('local_faultreporting');
     }
 
     /**
