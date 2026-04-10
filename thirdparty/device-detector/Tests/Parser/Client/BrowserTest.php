@@ -1,0 +1,191 @@
+<?php
+
+/**
+ * Device Detector - The Universal Device Detection library for parsing User Agents
+ *
+ * @link https://matomo.org
+ *
+ * @license http://www.gnu.org/licenses/lgpl.html LGPL v3 or later
+ */
+
+declare(strict_types=1);
+
+namespace DeviceDetector\Tests\Parser\Client;
+
+use DeviceDetector\ClientHints;
+use DeviceDetector\Parser\Client\Browser;
+use DeviceDetector\Parser\Client\Browser\Engine;
+use DeviceDetector\Parser\Client\Hints\BrowserHints;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
+use Spyc;
+
+class BrowserTest extends TestCase
+{
+    protected static $browsersTested = [];
+
+    /**
+     * @dataProvider getFixtures
+     */
+    #[DataProvider('getFixtures')]
+    public function testParse(string $useragent, array $client, ?array $headers = null): void
+    {
+        $browserParser = new Browser();
+        $browserParser::setVersionTruncation(Browser::VERSION_TRUNCATION_NONE);
+        $browserParser->setUserAgent($useragent);
+
+        if (null !== $headers) {
+            $browserParser->setClientHints(ClientHints::factory($headers));
+        }
+
+        $browser = $browserParser->parse();
+        unset($browser['short_name']);
+
+        $this->assertEquals($client, $browser, "UserAgent: {$useragent}");
+        $this->assertTrue($this->checkBrowserEngine($browser['engine']), \sprintf(
+            "UserAgent: %s\nEngine wrong name: `%s`",
+            $useragent,
+            $browser['engine']
+        ));
+
+        self::$browsersTested[] = $client['name'];
+    }
+
+    public static function getFixtures(): array
+    {
+        $fixtureData = Spyc::YAMLLoad(\realpath(__DIR__) . '/fixtures/browser.yml');
+
+        $fixtureData = \array_map(static function (array $item): array {
+            return ['useragent' => $item['user_agent'], 'client' => $item['client'], 'headers' => $item['headers'] ?? null];
+        }, $fixtureData);
+
+        return $fixtureData;
+    }
+
+    public function testGetAvailableBrowserFamilies(): void
+    {
+        $this->assertGreaterThan(5, Browser::getAvailableBrowserFamilies());
+    }
+
+    public function testAllBrowsersTested(): void
+    {
+        $allBrowsers       = \array_values(Browser::getAvailableBrowsers());
+        $browsersNotTested = \array_diff($allBrowsers, self::$browsersTested);
+        $this->assertEmpty($browsersNotTested, 'This browsers are not tested: ' . \implode(', ', $browsersNotTested));
+    }
+
+    public function testGetAvailableClients(): void
+    {
+        $available = Browser::getAvailableClients();
+        $this->assertGreaterThanOrEqual(\count($available), \count(Browser::getAvailableBrowsers()));
+    }
+
+    public function testStructureBrowsersYml(): void
+    {
+        $ymlDataItems = Spyc::YAMLLoad(__DIR__ . '/../../../regexes/client/browsers.yml');
+
+        foreach ($ymlDataItems as $item) {
+            $this->assertTrue(\array_key_exists('regex', $item), 'key "regex" not exist');
+            $this->assertTrue(\array_key_exists('name', $item), 'key "name" not exist');
+            $this->assertTrue(\array_key_exists('version', $item), 'key "version" not exist');
+            $this->assertIsString($item['regex']);
+            $this->assertIsString($item['name']);
+            $this->assertIsString($item['version']);
+        }
+    }
+
+    public function testBrowserFamiliesNoDuplicates(): void
+    {
+        foreach (Browser::getAvailableBrowserFamilies() as $browser => $families) {
+            foreach (\array_count_values($families) as $shortcode => $count) {
+                $this->assertEquals(
+                    $count,
+                    1,
+                    "Family {$browser}: contains duplicate of shortcode {$shortcode}"
+                );
+            }
+        }
+    }
+
+    public function testShortCodesComparisonWithBrowsers(): void
+    {
+        $reflectionClass = new \ReflectionClass(Browser::class);
+        $browserProperty = $reflectionClass->getProperty('availableBrowsers');
+
+        if (PHP_VERSION_ID < 80500) {
+            $browserProperty->setAccessible(true);
+        }
+
+        $availableBrowsers = $browserProperty->getValue();
+
+        $browserFamilyProperty = $reflectionClass->getProperty('browserFamilies');
+
+        if (PHP_VERSION_ID < 80500) {
+            $browserFamilyProperty->setAccessible(true);
+        }
+
+        $browserFamilies = $browserFamilyProperty->getValue();
+        $result          = [];
+
+        foreach ($browserFamilies as $codes) {
+            foreach ($codes as $code) {
+                if (isset($availableBrowsers[$code])) {
+                    continue;
+                }
+
+                $result[] = $code;
+            }
+        }
+
+        $this->assertEquals([], $result, 'These shortcode does not match the list of browsers');
+    }
+
+    /**
+     * @return array
+     * @throws \ReflectionException
+     */
+    public static function getFixturesBrowserHints(): array
+    {
+        $method = new \ReflectionMethod(BrowserHints::class, 'getRegexes');
+
+        if (PHP_VERSION_ID < 80500) {
+            $method->setAccessible(true);
+        }
+
+        $hints    = $method->invoke(new BrowserHints());
+        $fixtures = [];
+
+        foreach ($hints as $name) {
+            $fixtures[] = \compact('name');
+        }
+
+        return $fixtures;
+    }
+
+    /**
+     * @dataProvider getFixturesBrowserHints
+     */
+    #[DataProvider('getFixturesBrowserHints')]
+    public function testBrowserHintsForAvailableBrowsers(string $name): void
+    {
+        $browserShort = Browser::getBrowserShortName($name);
+        $this->assertNotEquals(
+            null,
+            $browserShort,
+            \sprintf('Browser name "%s" was not found in $availableBrowsers.', $name)
+        );
+    }
+
+    protected function checkBrowserEngine(string $engine): bool
+    {
+        if ('' === $engine) {
+            return true;
+        }
+
+        $engines         = Engine::getAvailableEngines();
+        $enginePos       = \array_search($engine, $engines, false);
+        $engineReference = $engines[$enginePos] ?? null;
+
+        return $engineReference === $engine;
+    }
+}
