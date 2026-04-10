@@ -1,9 +1,3 @@
-[submodule "thirdparty/spyc"]
-	path = thirdparty/spyc
-	url = https://github.com/mustangostang/spyc.git
-[submodule "thirdparty/device-detector"]
-	path = thirdparty/device-detector
-	url = https://github.com/matomo-org/device-detector.git
 [submodule "spyc"]
 	path = spyc
 	url = https://github.com/mustangostang/spyc.git
