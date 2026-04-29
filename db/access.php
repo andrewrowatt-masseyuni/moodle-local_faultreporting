@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information for Fault Reporting
+ * Capability definitions for Fault Reporting
  *
  * @package    local_faultreporting
  * @copyright  2025 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
@@ -24,9 +24,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component    = 'local_faultreporting';
-$plugin->release      = '1.0.9';
-$plugin->version      = 2026042900;
-$plugin->requires     = 2022111800;
-$plugin->supported    = [401, 405];
-$plugin->maturity     = MATURITY_STABLE;
+$capabilities = [
+    'local/faultreporting:viewreports' => [
+        'captype'      => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes'   => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+];

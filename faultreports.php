@@ -36,7 +36,7 @@ $PAGE->set_context(context_system::instance());
 $PAGE->set_heading(get_string('faultreports', 'local_faultreporting'));
 $PAGE->set_title(get_string('faultreports', 'local_faultreporting'));
 
-require_capability('report/log:view', $PAGE->context);
+require_capability('local/faultreporting:viewreports', $PAGE->context);
 
 $action = optional_param('action', null, PARAM_TEXT);
 $reportid = optional_param('id', null, PARAM_INT);

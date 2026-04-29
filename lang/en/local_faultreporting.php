@@ -50,6 +50,7 @@ $string['descriptionstaffmd'] = 'While you can use this form, as a staff member 
 $string['diagnosticinformation'] = 'Diagnostic information for support personal';
 $string['externalid'] = 'Assyst ID';
 $string['faultreport'] = 'Fault report';
+$string['faultreporting:viewreports'] = 'View and manage submitted fault reports';
 $string['faultreports'] = 'Fault reports';
 $string['noreports'] = 'No fault reports';
 $string['pluginname'] = 'Fault Reporting';
