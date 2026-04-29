@@ -61,4 +61,6 @@ Feature: Basic tests for Fault Reporting
     Then "[data-table-total-rows=\"1\"]" "css_element" should exist
 
     And I press "Delete" action in the "testadmin" report row
+    And I should see "Permanently delete this fault report?"
+    And I press "Continue"
     And I should see "Nothing to display"
