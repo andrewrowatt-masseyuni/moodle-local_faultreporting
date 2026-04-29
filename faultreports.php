@@ -38,21 +38,55 @@ $PAGE->set_title(get_string('faultreports', 'local_faultreporting'));
 
 require_capability('local/faultreporting:viewreports', $PAGE->context);
 
-$action = optional_param('action', null, PARAM_TEXT);
+$action = optional_param('action', null, PARAM_ALPHA);
 $reportid = optional_param('id', null, PARAM_INT);
+$confirm = optional_param('confirm', 0, PARAM_BOOL);
 
 if ($action && $reportid) {
-    require_sesskey();
+    if ($confirm) {
+        // POST submission from the confirmation interstitial below.
+        require_sesskey();
 
-    switch ($action) {
-        case 'resend':
-            faultreport::queue_send_report($reportid);
-            redirect($url, get_string('reportqueued', 'local_faultreporting'), null, \core\output\notification::NOTIFY_INFO);
-            break;
-        case 'delete':
-            faultreport::delete_report($reportid);
-            redirect($url, get_string('reportdeleted', 'local_faultreporting'), null, \core\output\notification::NOTIFY_INFO);
-            break;
+        switch ($action) {
+            case 'resend':
+                faultreport::queue_send_report($reportid);
+                redirect($url, get_string('reportqueued', 'local_faultreporting'), null, \core\output\notification::NOTIFY_INFO);
+                break;
+            case 'delete':
+                faultreport::delete_report($reportid);
+                redirect($url, get_string('reportdeleted', 'local_faultreporting'), null, \core\output\notification::NOTIFY_INFO);
+                break;
+            default:
+                redirect($url);
+        }
+    } else {
+        // Show a confirmation page; the continue button POSTs back here with confirm=1.
+        switch ($action) {
+            case 'resend':
+                $confirmmessage = get_string('confirmresend', 'local_faultreporting');
+                break;
+            case 'delete':
+                $confirmmessage = get_string('confirmdelete', 'local_faultreporting');
+                break;
+            default:
+                redirect($url);
+        }
+
+        $confirmurl = new moodle_url('/local/faultreporting/faultreports.php', [
+            'action' => $action,
+            'id' => $reportid,
+            'confirm' => 1,
+            'sesskey' => sesskey(),
+        ]);
+
+        echo $OUTPUT->header();
+        echo $OUTPUT->confirm(
+            $confirmmessage,
+            new single_button($confirmurl, get_string('continue'), 'post'),
+            $url
+        );
+        echo $OUTPUT->footer();
+        exit;
     }
 }
 
