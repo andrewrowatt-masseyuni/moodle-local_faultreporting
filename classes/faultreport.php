@@ -495,19 +495,19 @@ class faultreport {
         switch ($status) {
             case self::STATUS_NEW:
                 return [
-                    'Pending',
+                    get_string('statuscodenew', 'local_faultreporting'),
                     get_string('statusnew', 'local_faultreporting'),
                     'warning',
                 ];
             case self::STATUS_SENT:
                 return [
-                    'Ok',
+                    get_string('statuscodesent', 'local_faultreporting'),
                     get_string('statussent', 'local_faultreporting'),
                     'success',
                 ];
             case self::STATUS_SEND_FAILURE:
                 return [
-                    'Error',
+                    get_string('statuscodesendfailure', 'local_faultreporting'),
                     get_string('statussendfailure', 'local_faultreporting'),
                     'danger',
                 ];

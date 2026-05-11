@@ -78,13 +78,7 @@ class provider implements
             return;
         }
 
-        // Get the list of users who have data in this context.
-
-        $reports = \local_faultreporting\faultreport::get_reports();
-        foreach ($reports as $report) {
-            // Note that the add_user function convieniently handles duplicates.
-            $userlist->add_user($report->userid);
-        }
+        $userlist->add_from_sql('userid', 'SELECT DISTINCT userid FROM {local_faultreporting}', []);
     }
 
     /**

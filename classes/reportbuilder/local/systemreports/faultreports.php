@@ -68,7 +68,7 @@ class faultreports extends system_report {
      * @return bool
      */
     protected function can_view(): bool {
-        return has_capability('report/log:view', context_system::instance());
+        return has_capability('local/faultreporting:viewreports', context_system::instance());
     }
 
     /**
