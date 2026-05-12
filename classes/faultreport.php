@@ -144,6 +144,20 @@ class faultreport {
                     ],
                 ],
             ],
+            'customFields' => [
+                [
+                    'customFieldShortCode' => 'AFFECTED PRODUCT',
+                    'customFieldId' => 49162,
+                    'customFieldType' => 6,
+                    'customLookupValueShortCode' => 'ZZOTHER',
+                ],
+                [
+                    'customFieldShortCode' => 'OTHER',
+                    'customFieldId' => 49163,
+                    'customFieldType' => 1,
+                    'stringValue' => 'Stream',
+                ],
+            ],
         ];
 
         return json_encode($data);
