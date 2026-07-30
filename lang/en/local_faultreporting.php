@@ -58,6 +58,7 @@ $string['faultreport'] = 'Fault report';
 $string['faultreporting:viewreports'] = 'View and manage submitted fault reports';
 $string['faultreports'] = 'Fault reports';
 $string['noreports'] = 'No fault reports';
+$string['phoneplaceholder'] = 'Contact number (optional)';
 $string['pluginname'] = 'Fault Reporting';
 $string['privacy:metadata:local_faultreporting'] = 'Information about individual fault reports.';
 $string['privacy:metadata:local_faultreporting:description'] = 'The description of the report, which may contain personal information.';

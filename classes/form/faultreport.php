@@ -33,8 +33,6 @@ class faultreport extends \moodleform {
      * Define the form.
      */
     public function definition() {
-        global $USER;
-
         $mform = $this->_form; // Don't forget the underscore!
 
         $mform->addElement('hidden', 'diagnosticinfo', $this->_customdata['diagnosticinfo']);
@@ -43,54 +41,38 @@ class faultreport extends \moodleform {
         $mform->addElement('hidden', 'fromurl', $this->_customdata['fromurl']);
         $mform->setType('fromurl', PARAM_TEXT);
 
+        $mform->addElement('hidden', 'url', $this->_customdata['url']);
+        $mform->setType('url', PARAM_TEXT);
+
         $mform->addElement('header', 'general', get_string('basicinformationgroup', 'local_faultreporting'));
 
-        $mform->addElement(
-            'text',
-            'username',
-            util::is_student() ? get_string('studentid', 'local_faultreporting') : get_string('username', 'local_faultreporting'),
-            ['size' => 8, 'disabled' => 'disabled']
-        );
-        $mform->setDefault('username', $USER->username);
-        $mform->setType('username', PARAM_TEXT);
-
-        $mform->addElement('text', 'name', get_string('name'), ['size' => 20]);
-        $mform->setDefault('name', $USER->firstname . ' ' . $USER->lastname);
-        $mform->setType('name', PARAM_TEXT);
-        $mform->addRule('name', null, 'required', null, 'client');
-
-        $mform->addElement('text', 'email', get_string('email'), ['size' => 24]);
-        $mform->setDefault('email', $USER->email);
-        $mform->setType('email', PARAM_TEXT);
-        $mform->addRule('email', null, 'required', null, 'client');
-
-        $mform->addElement('text', 'phone', get_string('phone'), ['size' => 16]);
-        $mform->setDefault('phone', util::get_phone());
-        $mform->setType('phone', PARAM_TEXT);
+        $this->add_user_details($mform);
 
         $mform->addElement(
             'textarea',
             'description',
-            get_string('description', 'local_faultreporting'),
+            get_string('description', 'local_faultreporting')
+            . html_writer::span(
+                get_string('description_help', 'local_faultreporting'),
+                'd-block font-italic'
+            ),
             'wrap="virtual" rows="5" cols="50"'
         );
         $mform->setDefault('description', $this->_customdata['description'] ?? '');
         $mform->setType('description', PARAM_TEXT);
         $mform->addRule('description', null, 'required', null, 'client');
-        $mform->addHelpButton('description', 'description', 'local_faultreporting');
 
-        // Arguably a bit of a hack to get the help text to display in my preferred place.
-        $mform->addElement('html', html_writer::div(
-            '<i class="icon fa fa-info-circle " aria-hidden="true"></i>' . get_string('description_help', 'local_faultreporting'),
-            'alert alert-info help-text'
-        ));
+        $mform->addElement(
+            'html',
+            '<div class="d-flex justify-content-start local_faultreporting-faultreport-uigroup">'
+        );
 
         // Optional fields, prefilled where the courseid and/or coursemoduleid parameters allow.
-        $mform->addElement('text', 'coursename', get_string('coursename', 'local_faultreporting'), ['size' => 80]);
+        $mform->addElement('text', 'coursename', get_string('coursename', 'local_faultreporting'), ['size' => 40]);
         $mform->setDefault('coursename', $this->_customdata['coursename'] ?? '');
         $mform->setType('coursename', PARAM_TEXT);
 
-        $mform->addElement('text', 'coursecode', get_string('coursecode', 'local_faultreporting'), ['size' => 32]);
+        $mform->addElement('text', 'coursecode', get_string('coursecode', 'local_faultreporting'), ['size' => 6]);
         $mform->setDefault('coursecode', $this->_customdata['coursecode'] ?? '');
         $mform->setType('coursecode', PARAM_TEXT);
 
@@ -98,10 +80,19 @@ class faultreport extends \moodleform {
         $mform->setDefault('activityname', $this->_customdata['activityname'] ?? '');
         $mform->setType('activityname', PARAM_TEXT);
 
+        $mform->addElement(
+            'html',
+            '</div>'
+        );
+
+        /*
         // Note this duplicates the URL in the diagnostic information, but is editable by the user.
-        $mform->addElement('text', 'url', get_string('url'), ['size' => 32]);
+        $mform->addElement('text', 'url', get_string('url'), ['size' => 100]);
         $mform->setDefault('url', $this->_customdata['url'] ?? '');
         $mform->setType('url', PARAM_TEXT);
+        */
+
+        /*
 
         $mform->addElement('header', 'diagnosticinformation', get_string('diagnosticinformation', 'local_faultreporting'));
         $mform->setExpanded('diagnosticinformation', false); // Collapse by default.
@@ -114,10 +105,57 @@ class faultreport extends \moodleform {
 
         $mform->closeHeaderBefore('buttonar');
         // End of owner group.
+        */
 
         $buttonarray = [];
         $buttonarray[] = $mform->createElement('submit', 'submitbutton', get_string('submitreport', 'local_faultreporting'));
         $buttonarray[] = $mform->createElement('cancel');
         $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
+    }
+
+    /**
+     * Adds the user's own details to the form
+     *
+     * The username, name and email are not editable, so they are shown as static text. Phone is
+     * editable, so it is grouped with them to keep all four on a single row.
+     *
+     * @param \MoodleQuickForm $mform
+     */
+    private function add_user_details(\MoodleQuickForm $mform): void {
+        global $USER;
+
+        $usernamelabel = util::is_student()
+            ? get_string('studentid', 'local_faultreporting')
+            : get_string('username', 'local_faultreporting');
+
+        $userdetails = [
+            $usernamelabel => $USER->username,
+            get_string('name') => $USER->firstname . ' ' . $USER->lastname,
+            get_string('email') => $USER->email,
+        ];
+
+        $columns = '';
+
+        foreach ($userdetails as $label => $value) {
+            $columns .= html_writer::div(
+                html_writer::div($label, 'small text-muted') . html_writer::div(s($value), 'text-nowrap form-control form-control-disabled'),
+                'mr-4'  
+            );
+        }
+
+        $phone = $mform->createElement('text', 'phone', get_string('phone'), ['size' => 20, 'placeholder' => get_string('phoneplaceholder', 'local_faultreporting')]);
+
+        $userdetailsgroup = [
+            $mform->createElement('static', 'userdetailsstatic', '', html_writer::div($columns, 'd-flex flex-wrap')),
+            $phone,
+        ];
+
+        $mform->addGroup($userdetailsgroup, 'userdetails', '', '', false);
+
+        // Grouping an element hides its label, but the phone label is wanted above its column.
+        $phone->setHiddenLabel(false);
+
+        $mform->setDefault('phone', util::get_phone());
+        $mform->setType('phone', PARAM_TEXT);
     }
 }

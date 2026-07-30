@@ -148,7 +148,7 @@ class util {
             return ['coursename' => '', 'coursecode' => ''];
         }
 
-        return ['coursename' => $course->fullname, 'coursecode' => $course->shortname];
+        return ['coursename' => $course->fullname, 'coursecode' => substr($course->shortname, 0, 6)];
     }
 
     /**

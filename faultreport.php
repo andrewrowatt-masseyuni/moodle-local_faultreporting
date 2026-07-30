@@ -54,13 +54,10 @@ $courseinfo = util::get_course_and_activity_info($courseid, $coursemoduleid);
 
 $diagnosticinfo =
     "Page: $frompage\n" .
-    "URL: $fromurl\n\n" .
+    "URL or HTTP Referer: $fromurl\n\n" .
     "Browser: $clientinfo[browser]\n" .
     "OS: $clientinfo[operatingsystem]\n" .
-    "Useragent: $_SERVER[HTTP_USER_AGENT]\n\n" .
-    "Course name: $courseinfo[coursename]\n" .
-    "Course code: $courseinfo[coursecode]\n" .
-    "Activity name: $courseinfo[activityname]\n" .
+    "Useragent: $_SERVER[HTTP_USER_AGENT]\n" .
     "Course ID: $courseid\n" .
     "Course module ID: $coursemoduleid\n\n";
 
@@ -92,8 +89,8 @@ if ($form->is_cancelled()) {
 
     $payload =
         "Username: $USER->username\n" .
-        "Name: $formdata->name\n" .
-        "Email: $formdata->email\n" .
+        "Name: $USER->firstname $USER->lastname\n" .
+        "Email: $USER->email\n" .
         "Phone: $formdata->phone\n\n" .
         "Course name: $formdata->coursename\n" .
         "Course code: $formdata->coursecode\n" .

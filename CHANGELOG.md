@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#16](https://github.com/andrewrowatt-masseyuni/moodle-local_faultreporting/issues/16) - Delete function not working on the fault reports admin screen
 
 ### Changed
+- [#29](https://github.com/andrewrowatt-masseyuni/moodle-local_faultreporting/issues/29) - Show username, name and email as static text on a single row with the editable phone field
 - [#20](https://github.com/andrewrowatt-masseyuni/moodle-local_faultreporting/issues/20) - Add Example context (json) to templates
 
 ## [1.0.7] - 2025-05-26

@@ -14,6 +14,19 @@
         }
     }
 
+    /* Show the phone label above its input to match the static details sharing the same row. */
+    [data-groupname="userdetails"] {
+        margin-bottom: 0;
+
+        label {
+            color: rgb(108, 117, 125);
+            display: block;
+            font-size: 0.875em;
+            margin-bottom: 0;
+            padding: 0;
+        }
+    }
+
     &:not(.theme-snap) {
         .help-text {
             margin-left: calc(25% + 7px);
@@ -47,6 +60,50 @@
 
         .badge {
             border-radius: 0.25rem;
+        }
+
+    }
+}
+
+#page-local-faultreporting-faultreport {
+    &.theme-snap {
+        label {
+            /* emulate text-muted small */
+            color: rgb(108, 117, 125);
+            font-size: 0.75rem;
+            font-weight: 400;
+            margin-bottom: 0;
+            white-space: nowrap;
+        }
+
+        .form-control {
+            font-weight: 300;
+            font-size: 0.875rem;
+
+            &::placeholder {
+                font-weight: 300;
+                font-size: 90%;
+                font-style: italic;
+            }
+        }
+
+        .local_faultreporting-faultreport-uigroup {
+            .fitem {
+                padding: .5rem;
+                display: block;
+                margin: 0;
+            }
+
+            .felement {
+                max-width: unset;
+                padding-left: unset;
+                padding-right: unset;
+
+            }
+        }
+
+        .form-control-disabled {
+            background-color: #e9ecef;
         }
     }
 }

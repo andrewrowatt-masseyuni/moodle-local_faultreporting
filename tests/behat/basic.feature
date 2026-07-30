@@ -21,6 +21,9 @@ Feature: Basic tests for Fault Reporting
     Given I am on the "local_faultreporting > faultreport" page logged in as "98186700"
     Then I should see "Create new fault report"
     And I should see "Something not working quite right with Stream? Use this form to log a support request. Remember to include as much information as possible."
+    And I should see "student1@example.com"
+    And "Email" "field" should not exist
+    And "Name" "field" should not exist
     And I set the following fields to these values:
       | Description | test98186700 |
     And I press "Submit report"
@@ -68,6 +71,7 @@ Feature: Basic tests for Fault Reporting
 
     And I set the following fields to these values:
       | Description | test98186700course                             |
+      | Phone       | 021 555 0100                                   |
       | URL         | https://example.com/mod/page/view.php?id=99999 |
     And I press "Submit report"
     Then I should see "Report successfully queued for sending"
