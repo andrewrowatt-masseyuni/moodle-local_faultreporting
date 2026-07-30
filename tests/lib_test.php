@@ -124,6 +124,57 @@ final class lib_test extends \advanced_testcase {
     }
 
     /**
+     * Test course and activity information derived from the courseid and coursemoduleid parameters
+     * @return void
+     *
+     * @covers \local_faultreporting
+     */
+    public function test_get_course_and_activity_info(): void {
+        $course = $this->getDataGenerator()->create_course(['fullname' => 'Test course 1', 'shortname' => 'TC1']);
+        $page = $this->getDataGenerator()->create_module('page', ['course' => $course->id, 'name' => 'Test page 1']);
+
+        $this->getDataGenerator()->enrol_user($this->user1->id, $course->id);
+        $this->setUser($this->user1);
+
+        // No parameters supplied.
+        $this->assertEquals(
+            ['coursename' => '', 'coursecode' => '', 'activityname' => ''],
+            util::get_course_and_activity_info()
+        );
+
+        // Course from courseid.
+        $this->assertEquals(
+            ['coursename' => 'Test course 1', 'coursecode' => 'TC1', 'activityname' => ''],
+            util::get_course_and_activity_info($course->id)
+        );
+
+        // Course and activity from coursemoduleid.
+        $this->assertEquals(
+            ['coursename' => 'Test course 1', 'coursecode' => 'TC1', 'activityname' => 'Test page 1'],
+            util::get_course_and_activity_info(0, $page->cmid)
+        );
+
+        // A supplied courseid takes precedence over the course of the supplied activity.
+        $this->assertEquals(
+            ['coursename' => 'Test course 1', 'coursecode' => 'TC1', 'activityname' => 'Test page 1'],
+            util::get_course_and_activity_info($course->id, $page->cmid)
+        );
+
+        // Unknown courseid and coursemoduleid.
+        $this->assertEquals(
+            ['coursename' => '', 'coursecode' => '', 'activityname' => ''],
+            util::get_course_and_activity_info(-1, -1)
+        );
+
+        // A user who cannot access the course is not told anything about it.
+        $this->setUser($this->user2);
+        $this->assertEquals(
+            ['coursename' => '', 'coursecode' => '', 'activityname' => ''],
+            util::get_course_and_activity_info($course->id, $page->cmid)
+        );
+    }
+
+    /**
      * Test sending a report to the external system
      * @return void
      *

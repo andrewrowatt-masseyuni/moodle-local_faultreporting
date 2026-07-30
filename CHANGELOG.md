@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- [#29](https://github.com/andrewrowatt-masseyuni/moodle-local_faultreporting/issues/29) - Add optional Course name, Course code, Activity name and URL fields to the fault report form, prefilled from the new optional `courseid` and `coursemoduleid` parameters
 - [#18](https://github.com/andrewrowatt-masseyuni/moodle-local_faultreporting/issues/18) - Add CSS to override Snap whitespace defaults on the fault reports UI to make it more compact
 - [#19](https://github.com/andrewrowatt-masseyuni/moodle-local_faultreporting/issues/19) - Use Moodle curl utility instead of custom curl implementation
 

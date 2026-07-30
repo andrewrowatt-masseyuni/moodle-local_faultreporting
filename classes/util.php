@@ -98,6 +98,83 @@ class util {
     }
 
     /**
+     * Returns course and activity information derived from optional courseid and coursemoduleid parameters
+     *
+     * The course name is the course fullname and the course code is the course shortname. If no
+     * courseid is supplied then the course is derived from the course that the supplied
+     * coursemoduleid belongs to.
+     *
+     * Only courses and activities that the current user is allowed to see are reported on.
+     *
+     * @param int $courseid Course id, 0 if not supplied
+     * @param int $coursemoduleid Course module id, 0 if not supplied
+     * @return array{coursename: string, coursecode: string, activityname: string}
+     */
+    public static function get_course_and_activity_info(int $courseid = 0, int $coursemoduleid = 0): array {
+        $cm = null;
+
+        if ($coursemoduleid > 0) {
+            $cm = get_coursemodule_from_id('', $coursemoduleid, 0, false, IGNORE_MISSING) ?: null;
+        }
+
+        if ($cm && !$courseid) {
+            // ... fall back to the course that the supplied activity belongs to
+            $courseid = $cm->course;
+        }
+
+        $coursenames = self::get_course_names($courseid);
+
+        return [
+            'coursename' => $coursenames['coursename'],
+            'coursecode' => $coursenames['coursecode'],
+            'activityname' => self::get_activity_name($cm),
+        ];
+    }
+
+    /**
+     * Returns the fullname and shortname of a course
+     *
+     * Empty strings are returned if the course does not exist or the current user cannot access it.
+     *
+     * @param int $courseid Course id, 0 if not supplied
+     * @return array{coursename: string, coursecode: string}
+     */
+    private static function get_course_names(int $courseid): array {
+        global $DB;
+
+        $course = $courseid ? $DB->get_record('course', ['id' => $courseid]) : false;
+
+        if (!$course || !can_access_course($course)) {
+            return ['coursename' => '', 'coursecode' => ''];
+        }
+
+        return ['coursename' => $course->fullname, 'coursecode' => $course->shortname];
+    }
+
+    /**
+     * Returns the name of the given activity
+     *
+     * An empty string is returned if no activity is supplied or the current user cannot see the
+     * activity.
+     *
+     * @param \stdClass|null $cm Course module record as returned by get_coursemodule_from_id()
+     * @return string
+     */
+    private static function get_activity_name(?\stdClass $cm): string {
+        if (!$cm) {
+            return '';
+        }
+
+        $cminfo = get_fast_modinfo($cm->course)->get_cm($cm->id);
+
+        if (!can_access_course(get_course($cm->course)) || !$cminfo->uservisible) {
+            return '';
+        }
+
+        return $cminfo->name;
+    }
+
+    /**
      * Returns basic browser/useragent information
      * @return array{browser: string, operatingsystem: string}
      */

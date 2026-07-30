@@ -49,4 +49,35 @@ class behat_local_faultreporting extends behat_base {
                 throw new Exception('Unrecognised fault reporting page type "' . $page . '."');
         }
     }
+
+    /**
+     * Convert page names to URLs for steps like 'When I am on the "[identifier]" "[page type]" page'.
+     *
+     * Recognised page names are:
+     * | Page                | Identifier meaning             | Description                              |
+     * | faultreport         | course idnumber, shortname     | Log a fault page for a course            |
+     * |                     | or fullname                    |                                          |
+     * | activityfaultreport | activity idnumber              | Log a fault page for an activity         |
+     *
+     * @param string $type identifies which type of page this is, e.g. 'faultreport'.
+     * @param string $identifier identifies the particular page, e.g. a course shortname.
+     * @return moodle_url the corresponding URL.
+     * @throws Exception with a meaningful error message if the specified page cannot be found.
+     */
+    protected function resolve_page_instance_url(string $type, string $identifier): moodle_url {
+        switch (strtolower($type)) {
+            case 'faultreport':
+                return new moodle_url(
+                    '/local/faultreporting/faultreport.php',
+                    ['courseid' => $this->get_course_id($identifier)]
+                );
+            case 'activityfaultreport':
+                return new moodle_url(
+                    '/local/faultreporting/faultreport.php',
+                    ['coursemoduleid' => $this->get_course_module_for_identifier($identifier)->id]
+                );
+            default:
+                throw new Exception('Unrecognised fault reporting page type "' . $type . '."');
+        }
+    }
 }

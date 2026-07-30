@@ -25,6 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['activityname'] = 'Activity name';
 $string['assystapiaffecteduserfallback'] = 'Assyst API Affected user fallback';
 $string['assystapiaffecteduserfallbackdesc'] = 'Shortcode of affected user that is used when the API reports a error with the Moodle supplied shortcode (username)';
 $string['assystapipassword'] = 'Assyst API password';
@@ -38,6 +39,8 @@ $string['assysteventsearchurldesc'] = 'URL for searching Assyst by event id. Use
 $string['basicinformationgroup'] = 'General';
 $string['confirmdelete'] = 'Permanently delete this fault report?';
 $string['confirmresend'] = 'Resend this fault report to the external system?';
+$string['coursecode'] = 'Course code';
+$string['coursename'] = 'Course name';
 $string['createnewfaultreport'] = 'Create new fault report';
 $string['defaultsummary'] = 'Log a Stream Request';
 $string['description'] = 'Description';
