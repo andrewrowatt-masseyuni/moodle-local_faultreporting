@@ -366,6 +366,63 @@ class faultreport {
     }
 
     /**
+     * Saves and queues a report built from submitted fault report form data
+     *
+     * Shared by the standalone fault report page and the pop-up (modal) version of the form. This
+     * must not redirect or produce output as it is also called from an AJAX request.
+     *
+     * @param \stdClass $formdata Data returned by the fault report form
+     */
+    public static function submit_form_data(\stdClass $formdata): void {
+        global $USER;
+
+        self::save_and_send_report(
+            $USER->id,
+            get_string('defaultsummary', 'local_faultreporting'),
+            $formdata->description,
+            self::build_payload($formdata)
+        );
+    }
+
+    /**
+     * Builds the full description of a fault that is passed to Assyst
+     *
+     * @param \stdClass $formdata Data returned by the fault report form
+     * @return string
+     */
+    public static function build_payload(\stdClass $formdata): string {
+        global $CFG, $USER;
+
+        $diagnosticinfo = util::build_diagnostic_info(
+            $formdata->page ?? '',
+            $formdata->url ?? '',
+            $formdata->courseid ?? 0,
+            $formdata->coursemoduleid ?? 0
+        );
+
+        // Logs are only reported on for the day the fault was logged.
+        $moodlelogdate = new \DateTime();
+        $moodlelogdate->setTime(0, 0, 0, 0);
+        $moodlelogdateepoch = $moodlelogdate->getTimestamp();
+
+        return
+            "Username: $USER->username\n" .
+            "Name: $USER->firstname $USER->lastname\n" .
+            "Email: $USER->email\n" .
+            "Phone: $formdata->phone\n\n" .
+            "Course name: $formdata->coursename\n" .
+            "Course code: $formdata->coursecode\n" .
+            "Activity name: $formdata->activityname\n" .
+            "URL: $formdata->url\n\n" .
+            "Description:\n$formdata->description\n\n" .
+            "Diagnostic Info:\n$diagnosticinfo" .
+            "Stream logs (on the day the fault was logged):\n" .
+                "$CFG->wwwroot/report/log/index.php?" .
+                "chooselog=1&showusers=0&showcourses=0&id=1&user=$USER->id&date=$moodlelogdateepoch" .
+                "&modid=&modaction=&origin=&edulevel=-1&logreader=logstore_standard";
+    }
+
+    /**
      * Creates a task to send a report to Assyst
      *
      * This is used to send the report in the background

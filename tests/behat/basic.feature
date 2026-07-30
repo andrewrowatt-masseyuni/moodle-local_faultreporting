@@ -70,9 +70,8 @@ Feature: Basic tests for Fault Reporting
     And the field "Activity name" matches value "Test page 1"
 
     And I set the following fields to these values:
-      | Description | test98186700course                             |
-      | Phone       | 021 555 0100                                   |
-      | URL         | https://example.com/mod/page/view.php?id=99999 |
+      | Description | test98186700course |
+      | Phone       | 021 555 0100       |
     And I press "Submit report"
     Then I should see "Report successfully queued for sending"
 

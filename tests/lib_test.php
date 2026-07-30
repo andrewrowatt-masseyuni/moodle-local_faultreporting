@@ -124,6 +124,46 @@ final class lib_test extends \advanced_testcase {
     }
 
     /**
+     * Test the payload that is sent to Assyst
+     * @return void
+     *
+     * @covers \local_faultreporting
+     */
+    public function test_build_payload(): void {
+        global $CFG;
+
+        $this->setUser($this->user2);
+
+        $payload = faultreport::build_payload((object)[
+            'description' => 'The page will not load.',
+            'phone' => '021 555 0100',
+            'coursename' => 'Test course 1',
+            'coursecode' => 'TC1',
+            'activityname' => 'Test page 1',
+            'page' => 'Test page 1',
+            'url' => "$CFG->wwwroot/mod/page/view.php?id=7",
+            'courseid' => 2,
+            'coursemoduleid' => 7,
+        ]);
+
+        $this->assertStringContainsString("Username: {$this->user2->username}", $payload);
+        $this->assertStringContainsString("Email: {$this->user2->email}", $payload);
+        $this->assertStringContainsString('Phone: 021 555 0100', $payload);
+        $this->assertStringContainsString('Course name: Test course 1', $payload);
+        $this->assertStringContainsString('Course code: TC1', $payload);
+        $this->assertStringContainsString('Activity name: Test page 1', $payload);
+        $this->assertStringContainsString("Description:\nThe page will not load.", $payload);
+
+        // Diagnostic information is built when the report is submitted, not carried in the form.
+        $this->assertStringContainsString('Course module ID: 7', $payload);
+
+        $this->assertStringContainsString(
+            "$CFG->wwwroot/report/log/index.php?chooselog=1&showusers=0&showcourses=0&id=1&user={$this->user2->id}",
+            $payload
+        );
+    }
+
+    /**
      * Test course and activity information derived from the courseid and coursemoduleid parameters
      * @return void
      *

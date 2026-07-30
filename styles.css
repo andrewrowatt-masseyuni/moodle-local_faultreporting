@@ -1,4 +1,6 @@
-#page-local-faultreporting-faultreport {
+/* Scoped to the form itself rather than the page, so that the styling also applies to the
+   pop-up (modal) version of the form, which is appended to the body. */
+.local_faultreporting-faultreport {
     .faultreport-description {
         a {
             font-weight: 300;
@@ -26,20 +28,81 @@
             padding: 0;
         }
     }
+}
 
-    &:not(.theme-snap) {
-        .help-text {
-            margin-left: calc(25% + 7px);
+/* Line validation messages up with their field. Not needed in the pop-up, where set_display_vertical()
+   adds full-width-labels and so there is no label column to offset. */
+body:not(.theme-snap) .local_faultreporting-faultreport:not(.full-width-labels) .help-text {
+    margin-left: calc(25% + 7px);
+}
+
+.theme-snap .local_faultreporting-faultreport {
+    .help-text {
+        /* Hide icon as it looks out of place with Snap alerts */
+        > i.icon {
+            display: none;
         }
     }
 
-    &.theme-snap {
-        .help-text {
-            /* Hide icon as it looks out of place with Snap alerts */
-            >i.icon {
-                display: none;
-            }
+    .col-form-label {
+        padding-left: unset;
+    }
+
+    .femptylabel > div.col-form-label {
+        /* stylelint-disable-next-line declaration-no-important */
+        display: none !important;
+    }
+
+    label {
+        /* emulate text-muted small */
+        color: rgb(108, 117, 125);
+        font-size: 0.75rem;
+        font-weight: 400;
+        margin-bottom: 0;
+        white-space: nowrap;
+
+    }
+
+    .form-control {
+        font-weight: 300;
+        font-size: 0.875rem;
+
+        &::placeholder {
+            font-weight: 300;
+            font-size: 90%;
+            font-style: italic;
         }
+    }
+
+    .fitem {
+        padding: .5rem;
+        display: block;
+        /* stylelint-disable-next-line declaration-no-important */
+        margin: 0 !important;
+    }
+
+    .felement {
+        max-width: unset;
+        padding-left: unset;
+        padding-right: unset;
+    }
+
+    .local_faultreporting-faultreport-uigroup {
+        .fitem {
+            padding: .5rem;
+            display: block;
+            margin: 0;
+        }
+
+        .felement {
+            max-width: unset;
+            padding-left: unset;
+            padding-right: unset;
+        }
+    }
+
+    .form-control-disabled {
+        background-color: #e9ecef;
     }
 }
 
@@ -60,50 +123,6 @@
 
         .badge {
             border-radius: 0.25rem;
-        }
-
-    }
-}
-
-#page-local-faultreporting-faultreport {
-    &.theme-snap {
-        label {
-            /* emulate text-muted small */
-            color: rgb(108, 117, 125);
-            font-size: 0.75rem;
-            font-weight: 400;
-            margin-bottom: 0;
-            white-space: nowrap;
-        }
-
-        .form-control {
-            font-weight: 300;
-            font-size: 0.875rem;
-
-            &::placeholder {
-                font-weight: 300;
-                font-size: 90%;
-                font-style: italic;
-            }
-        }
-
-        .local_faultreporting-faultreport-uigroup {
-            .fitem {
-                padding: .5rem;
-                display: block;
-                margin: 0;
-            }
-
-            .felement {
-                max-width: unset;
-                padding-left: unset;
-                padding-right: unset;
-
-            }
-        }
-
-        .form-control-disabled {
-            background-color: #e9ecef;
         }
     }
 }

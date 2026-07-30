@@ -15,128 +15,47 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * TODO describe file faultreport
+ * Standalone page for creating a new fault report
+ *
+ * The same form is also available as a pop-up, see local_faultreporting\output\popup_link.
  *
  * @package    local_faultreporting
  * @copyright  2025 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace local_faultreporting;
-
-use moodle_url;
-use context_system;
-
 require('../../config.php');
 
 require_login();
 
-$frompage = optional_param('page', '-', PARAM_TEXT);
-$fromurl = optional_param('url', '-', PARAM_TEXT);
-$description = optional_param('description', '', PARAM_TEXT);
-$courseid = optional_param('courseid', 0, PARAM_INT);
-$coursemoduleid = optional_param('coursemoduleid', 0, PARAM_INT);
-
-if ($fromurl == '-' && array_key_exists('HTTP_REFERER', $_SERVER)) {
-        $fromurl = $_SERVER['HTTP_REFERER'];
-}
-
-
-$url = new moodle_url('/local/faultreporting/faultreport.php', []);
+$url = new moodle_url('/local/faultreporting/faultreport.php');
 $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
 
 $PAGE->set_title(get_string('pluginname', 'local_faultreporting'));
 $PAGE->set_heading(get_string('createnewfaultreport', 'local_faultreporting'));
 
-$clientinfo = util::get_client_info();
-$courseinfo = util::get_course_and_activity_info($courseid, $coursemoduleid);
-
-$diagnosticinfo =
-    "Page: $frompage\n" .
-    "URL or HTTP Referer: $fromurl\n\n" .
-    "Browser: $clientinfo[browser]\n" .
-    "OS: $clientinfo[operatingsystem]\n" .
-    "Useragent: $_SERVER[HTTP_USER_AGENT]\n" .
-    "Course ID: $courseid\n" .
-    "Course module ID: $coursemoduleid\n\n";
-
-$form = new \local_faultreporting\form\faultreport(
-    null,
-    [
-        'diagnosticinfo' => $diagnosticinfo,
-        'fromurl' => $fromurl,
-        'description' => $description,
-        'coursename' => $courseinfo['coursename'],
-        'coursecode' => $courseinfo['coursecode'],
-        'activityname' => $courseinfo['activityname'],
-        // The url form element is editable, so an unknown URL is presented as an empty field.
-        'url' => $fromurl == '-' ? '' : $fromurl,
-    ]
-);
+// The form reads the page, url, description, courseid and coursemoduleid parameters itself.
+$form = new \local_faultreporting\form\faultreport();
+$form->set_data_for_dynamic_submission();
 
 if ($form->is_cancelled()) {
-    // If there is a cancel element on the form, and it was pressed,
-    // then the `is_cancelled()` function will return true.
-    // You can handle the cancel operation here.
-
     redirect(new moodle_url('/my/')); // To-do #3.
 } else if ($formdata = $form->get_data()) {
-    $moodlelogdate = new \DateTime();
-    $moodlelogdate->setTime(0, 0, 0, 0);
-    $moodlelogdateepoch = $moodlelogdate->getTimestamp();
+    \local_faultreporting\faultreport::submit_form_data($formdata);
 
+    // The url is cleaned as PARAM_LOCALURL by the form, so it is either local or empty.
+    $redirecturl = $formdata->url === '' ? new moodle_url('/my/') : new moodle_url($formdata->url);
 
-    $payload =
-        "Username: $USER->username\n" .
-        "Name: $USER->firstname $USER->lastname\n" .
-        "Email: $USER->email\n" .
-        "Phone: $formdata->phone\n\n" .
-        "Course name: $formdata->coursename\n" .
-        "Course code: $formdata->coursecode\n" .
-        "Activity name: $formdata->activityname\n" .
-        "URL: $formdata->url\n\n" .
-        "Description:\n$formdata->description\n\n" .
-        "Diagnostic Info:\n$formdata->diagnosticinfo" .
-        "Stream logs (on the day the fault was logged):\n" .
-            "$CFG->wwwroot/report/log/index.php?" .
-            "chooselog=1&showusers=0&showcourses=0&id=1&user=$USER->id&date=$moodlelogdateepoch" .
-            "&modid=&modaction=&origin=&edulevel=-1&logreader=logstore_standard";
-
-    faultreport::save_and_send_report(
-        $USER->id,
-        get_string('defaultsummary', 'local_faultreporting'),
-        $formdata->description,
-        $payload
+    redirect(
+        $redirecturl,
+        get_string('reportqueued', 'local_faultreporting'),
+        null,
+        \core\output\notification::NOTIFY_INFO
     );
-
-    $message = get_string('reportqueued', 'local_faultreporting');
-        $messagetype = \core\output\notification::NOTIFY_INFO;
-
-    if ($formdata->fromurl == '-') {
-        $redirecturl = new moodle_url('/my/');
-    } else {
-        $redirecturl = new moodle_url($formdata->fromurl);
-    }
-
-    redirect($redirecturl, $message, null, $messagetype);
 }
 
 echo $OUTPUT->header();
-
-$data = [
-    'descriptiongeneral' => markdown_to_html(
-        trim(get_string('descriptiongeneralmd', 'local_faultreporting'))
-    ),
-    'descriptionstaccount' => util::is_st_account() ? markdown_to_html(
-        trim(get_string('descriptionstaccountmd', 'local_faultreporting'))
-    ) : '',
-    'descriptionstaff' => !util::is_student() && !util::is_st_account() ? markdown_to_html(
-        trim(get_string('descriptionstaffmd', 'local_faultreporting'))
-    ) : '',
-];
-
-echo $OUTPUT->render_from_template('local_faultreporting/faultreport_description', $data);
 
 $form->display();
 
