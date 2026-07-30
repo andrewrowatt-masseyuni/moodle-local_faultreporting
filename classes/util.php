@@ -175,11 +175,71 @@ class util {
     }
 
     /**
+     * Returns the description blocks shown above the fault report form
+     *
+     * The blocks are chosen based on the type of account the current user holds. Empty strings are
+     * returned for blocks that do not apply.
+     *
+     * @return array{descriptiongeneral: string, descriptionstaccount: string, descriptionstaff: string}
+     */
+    public static function get_description_blocks(): array {
+        return [
+            'descriptiongeneral' => markdown_to_html(
+                trim(get_string('descriptiongeneralmd', 'local_faultreporting'))
+            ),
+            'descriptionstaccount' => self::is_st_account() ? markdown_to_html(
+                trim(get_string('descriptionstaccountmd', 'local_faultreporting'))
+            ) : '',
+            'descriptionstaff' => self::is_staff() ? markdown_to_html(
+                trim(get_string('descriptionstaffmd', 'local_faultreporting'))
+            ) : '',
+        ];
+    }
+
+    /**
+     * Builds the diagnostic information block included with every fault report
+     *
+     * @param string $page Title of the page the report was made from
+     * @param string $url URL of the page the report was made from
+     * @param int $courseid Course id, 0 if not supplied
+     * @param int $coursemoduleid Course module id, 0 if not supplied
+     * @return string
+     */
+    public static function build_diagnostic_info(
+        string $page,
+        string $url,
+        int $courseid = 0,
+        int $coursemoduleid = 0
+    ): string {
+        $clientinfo = self::get_client_info();
+
+        return
+            "Page: $page\n" .
+            "URL or HTTP Referer: $url\n\n" .
+            "Browser: $clientinfo[browser]\n" .
+            "OS: $clientinfo[operatingsystem]\n" .
+            'Useragent: ' . self::get_useragent() . "\n" .
+            "Course ID: $courseid\n" .
+            "Course module ID: $coursemoduleid\n\n";
+    }
+
+    /**
+     * Returns the useragent of the current request
+     *
+     * An empty string is returned where no useragent was supplied, for example under CLI and PHPUnit.
+     *
+     * @return string
+     */
+    private static function get_useragent(): string {
+        return $_SERVER['HTTP_USER_AGENT'] ?? '';
+    }
+
+    /**
      * Returns basic browser/useragent information
      * @return array{browser: string, operatingsystem: string}
      */
     public static function get_client_info(): array {
-        $useragent = $_SERVER['HTTP_USER_AGENT'];
+        $useragent = self::get_useragent();
         $clienthints = ClientHints::factory($_SERVER); // ... client hints are optional
 
         $dd = new DeviceDetector($useragent, $clienthints);

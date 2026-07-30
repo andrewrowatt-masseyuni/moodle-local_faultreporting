@@ -8,14 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- [#31](https://github.com/andrewrowatt-masseyuni/moodle-local_faultreporting/issues/29) - Fault report form can now be shown in a pop-up as well as on its own page. `local_faultreporting\output\popup_link` renders the link and loads the JavaScript, and is used by the companion `filter_faultreporting` plugin to expand its `{faultreport}` token
 - [#29](https://github.com/andrewrowatt-masseyuni/moodle-local_faultreporting/issues/29) - Add optional Course name, Course code, Activity name and URL fields to the fault report form, prefilled from the new optional `courseid` and `coursemoduleid` parameters
 - [#18](https://github.com/andrewrowatt-masseyuni/moodle-local_faultreporting/issues/18) - Add CSS to override Snap whitespace defaults on the fault reports UI to make it more compact
 - [#19](https://github.com/andrewrowatt-masseyuni/moodle-local_faultreporting/issues/19) - Use Moodle curl utility instead of custom curl implementation
 
 ### Fixed
+- Fault report page no longer redirects to an arbitrary external URL supplied in the `url` parameter
 - [#16](https://github.com/andrewrowatt-masseyuni/moodle-local_faultreporting/issues/16) - Delete function not working on the fault reports admin screen
 
 ### Changed
+- Fault report form is now a `core_form\dynamic_form`, so the standalone page and the pop-up share one form class, one payload builder and one set of description blocks. The `fromurl` and `diagnosticinfo` hidden fields have been removed; the diagnostic information is built when the report is submitted
 - [#29](https://github.com/andrewrowatt-masseyuni/moodle-local_faultreporting/issues/29) - Show username, name and email as static text on a single row with the editable phone field
 - [#20](https://github.com/andrewrowatt-masseyuni/moodle-local_faultreporting/issues/20) - Add Example context (json) to templates
 
