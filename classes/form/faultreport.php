@@ -54,17 +54,17 @@ class faultreport extends \moodleform {
         $mform->setDefault('username', $USER->username);
         $mform->setType('username', PARAM_TEXT);
 
-        $mform->addElement('text', 'name', get_string('name'), ['size' => 32]);
+        $mform->addElement('text', 'name', get_string('name'), ['size' => 20]);
         $mform->setDefault('name', $USER->firstname . ' ' . $USER->lastname);
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
 
-        $mform->addElement('text', 'email', get_string('email'), ['size' => 32]);
+        $mform->addElement('text', 'email', get_string('email'), ['size' => 24]);
         $mform->setDefault('email', $USER->email);
         $mform->setType('email', PARAM_TEXT);
         $mform->addRule('email', null, 'required', null, 'client');
 
-        $mform->addElement('text', 'phone', get_string('phone'), ['size' => 32]);
+        $mform->addElement('text', 'phone', get_string('phone'), ['size' => 16]);
         $mform->setDefault('phone', util::get_phone());
         $mform->setType('phone', PARAM_TEXT);
 
@@ -85,12 +85,30 @@ class faultreport extends \moodleform {
             'alert alert-info help-text'
         ));
 
+        // Optional fields, prefilled where the courseid and/or coursemoduleid parameters allow.
+        $mform->addElement('text', 'coursename', get_string('coursename', 'local_faultreporting'), ['size' => 80]);
+        $mform->setDefault('coursename', $this->_customdata['coursename'] ?? '');
+        $mform->setType('coursename', PARAM_TEXT);
+
+        $mform->addElement('text', 'coursecode', get_string('coursecode', 'local_faultreporting'), ['size' => 32]);
+        $mform->setDefault('coursecode', $this->_customdata['coursecode'] ?? '');
+        $mform->setType('coursecode', PARAM_TEXT);
+
+        $mform->addElement('text', 'activityname', get_string('activityname', 'local_faultreporting'), ['size' => 32]);
+        $mform->setDefault('activityname', $this->_customdata['activityname'] ?? '');
+        $mform->setType('activityname', PARAM_TEXT);
+
+        // Note this duplicates the URL in the diagnostic information, but is editable by the user.
+        $mform->addElement('text', 'url', get_string('url'), ['size' => 32]);
+        $mform->setDefault('url', $this->_customdata['url'] ?? '');
+        $mform->setType('url', PARAM_TEXT);
+
         $mform->addElement('header', 'diagnosticinformation', get_string('diagnosticinformation', 'local_faultreporting'));
         $mform->setExpanded('diagnosticinformation', false); // Collapse by default.
 
         $mform->addElement('html', html_writer::tag(
             'div',
-            $this->_customdata['diagnosticinfo'],
+            s($this->_customdata['diagnosticinfo']),
             ['style' => 'white-space: pre-wrap;']
         ));
 

@@ -45,6 +45,36 @@ Feature: Basic tests for Fault Reporting
     Then I should see "testst100585"
     Then "[data-table-total-rows=\"2\"]" "css_element" should exist
 
+  Scenario: Course and activity information is prefilled from the courseid and coursemoduleid parameters
+    Given the following "courses" exist:
+      | fullname      | shortname | category |
+      | Test course 1 | TC1       | 0        |
+    And the following "activities" exist:
+      | activity | course | name        | idnumber |
+      | page     | TC1    | Test page 1 | page1    |
+    And the following "course enrolments" exist:
+      | user     | course | role    |
+      | 98186700 | TC1    | student |
+
+    Given I am on the "TC1" "local_faultreporting > faultreport" page logged in as "98186700"
+    Then the field "Course name" matches value "Test course 1"
+    And the field "Course code" matches value "TC1"
+    And the field "Activity name" matches value ""
+
+    Given I am on the "page1" "local_faultreporting > activityfaultreport" page logged in as "98186700"
+    Then the field "Course name" matches value "Test course 1"
+    And the field "Course code" matches value "TC1"
+    And the field "Activity name" matches value "Test page 1"
+
+    And I set the following fields to these values:
+      | Description | test98186700course                             |
+      | URL         | https://example.com/mod/page/view.php?id=99999 |
+    And I press "Submit report"
+    Then I should see "Report successfully queued for sending"
+
+    Given I am on the "local_faultreporting > faultreports" page logged in as "admin"
+    Then I should see "test98186700course"
+
   Scenario: As a admin I can delete a fault report
     Given I am on the "local_faultreporting > faultreports" page logged in as "admin"
     Then I should see "Nothing to display"

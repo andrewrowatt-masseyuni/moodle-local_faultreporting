@@ -34,6 +34,8 @@ require_login();
 $frompage = optional_param('page', '-', PARAM_TEXT);
 $fromurl = optional_param('url', '-', PARAM_TEXT);
 $description = optional_param('description', '', PARAM_TEXT);
+$courseid = optional_param('courseid', 0, PARAM_INT);
+$coursemoduleid = optional_param('coursemoduleid', 0, PARAM_INT);
 
 if ($fromurl == '-' && array_key_exists('HTTP_REFERER', $_SERVER)) {
         $fromurl = $_SERVER['HTTP_REFERER'];
@@ -48,17 +50,32 @@ $PAGE->set_title(get_string('pluginname', 'local_faultreporting'));
 $PAGE->set_heading(get_string('createnewfaultreport', 'local_faultreporting'));
 
 $clientinfo = util::get_client_info();
+$courseinfo = util::get_course_and_activity_info($courseid, $coursemoduleid);
 
 $diagnosticinfo =
     "Page: $frompage\n" .
     "URL: $fromurl\n\n" .
     "Browser: $clientinfo[browser]\n" .
     "OS: $clientinfo[operatingsystem]\n" .
-    "Useragent: $_SERVER[HTTP_USER_AGENT]\n\n";
+    "Useragent: $_SERVER[HTTP_USER_AGENT]\n\n" .
+    "Course name: $courseinfo[coursename]\n" .
+    "Course code: $courseinfo[coursecode]\n" .
+    "Activity name: $courseinfo[activityname]\n" .
+    "Course ID: $courseid\n" .
+    "Course module ID: $coursemoduleid\n\n";
 
 $form = new \local_faultreporting\form\faultreport(
     null,
-    ['diagnosticinfo' => $diagnosticinfo, 'fromurl' => $fromurl, 'description' => $description]
+    [
+        'diagnosticinfo' => $diagnosticinfo,
+        'fromurl' => $fromurl,
+        'description' => $description,
+        'coursename' => $courseinfo['coursename'],
+        'coursecode' => $courseinfo['coursecode'],
+        'activityname' => $courseinfo['activityname'],
+        // The url form element is editable, so an unknown URL is presented as an empty field.
+        'url' => $fromurl == '-' ? '' : $fromurl,
+    ]
 );
 
 if ($form->is_cancelled()) {
@@ -78,6 +95,10 @@ if ($form->is_cancelled()) {
         "Name: $formdata->name\n" .
         "Email: $formdata->email\n" .
         "Phone: $formdata->phone\n\n" .
+        "Course name: $formdata->coursename\n" .
+        "Course code: $formdata->coursecode\n" .
+        "Activity name: $formdata->activityname\n" .
+        "URL: $formdata->url\n\n" .
         "Description:\n$formdata->description\n\n" .
         "Diagnostic Info:\n$formdata->diagnosticinfo" .
         "Stream logs (on the day the fault was logged):\n" .
