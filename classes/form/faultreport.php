@@ -74,7 +74,7 @@ class faultreport extends \moodleform {
             get_string('description', 'local_faultreporting'),
             'wrap="virtual" rows="5" cols="50"'
         );
-        $mform->setDefault('description', '');
+        $mform->setDefault('description', $this->_customdata['description'] ?? '');
         $mform->setType('description', PARAM_TEXT);
         $mform->addRule('description', null, 'required', null, 'client');
         $mform->addHelpButton('description', 'description', 'local_faultreporting');

@@ -33,6 +33,7 @@ require_login();
 
 $frompage = optional_param('page', '-', PARAM_TEXT);
 $fromurl = optional_param('url', '-', PARAM_TEXT);
+$description = optional_param('description', '', PARAM_TEXT);
 
 if ($fromurl == '-' && array_key_exists('HTTP_REFERER', $_SERVER)) {
         $fromurl = $_SERVER['HTTP_REFERER'];
@@ -57,7 +58,7 @@ $diagnosticinfo =
 
 $form = new \local_faultreporting\form\faultreport(
     null,
-    ['diagnosticinfo' => $diagnosticinfo, 'fromurl' => $fromurl]
+    ['diagnosticinfo' => $diagnosticinfo, 'fromurl' => $fromurl, 'description' => $description]
 );
 
 if ($form->is_cancelled()) {
