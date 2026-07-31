@@ -126,3 +126,21 @@ body:not(.theme-snap) .local_faultreporting-faultreport:not(.full-width-labels) 
         }
     }
 }
+
+.theme-snap .toast-wrapper {
+    z-index: 1053;
+
+    .toast.toast-info {
+        background-color: rgba(204, 230, 234, 0.95);
+        color: #00414b;
+
+        .toast-body:before {
+            margin: 2px 5px 0 0;
+            content: "\f05a";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            font-size: 18px;
+        }
+    }
+}
+

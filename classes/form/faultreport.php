@@ -83,7 +83,7 @@ class faultreport extends \core_form\dynamic_form {
                 get_string('description_help', 'local_faultreporting'),
                 'd-block font-italic'
             ),
-            'wrap="virtual" rows="5" cols="50"'
+            ['wrap' => 'virtual', 'rows' => 5, 'cols' => 50, 'style' => 'width: 100%;']
         );
         $mform->setType('description', PARAM_TEXT);
         $mform->addRule('description', null, 'required', null, 'client');

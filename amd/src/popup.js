@@ -65,7 +65,9 @@ const showFaultReport = async(link) => {
     });
 
     modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
-        addToast(e.detail.message);
+        addToast(e.detail.message, {
+            type: 'info',
+        });
     });
 
     return modalForm.show();
